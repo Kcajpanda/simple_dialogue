@@ -1,74 +1,110 @@
 # Simple Dialogue
 
-Tiny datapack API for adding left/right click dialogue trees to FancyNPC.
+Simple Dialogue is now shaped as a Paper plugin instead of only a datapack.
 
-## FancyNPC setup
+The datapack prototype still exists under `data/`, but the plugin is the path forward because it can store dialogue trees in YAML, expose server commands, remember per-player dialogue sessions, and register a native FancyNPC action.
 
-Put these two commands on every NPC:
+## Why Plugin Instead Of Datapack?
+
+Datapack value:
+
+- No Java build or plugin install.
+- Good for tiny, fixed dialogue trees.
+- Easy to call from FancyNPC console/player commands.
+
+Datapack cost:
+
+- Arbitrary text input is painful.
+- Runtime editing through chat is not natural.
+- Data structures become scoreboards, tags, and storage paths.
+- Styling repeated NPC names before every line is possible, but clunky.
+
+Plugin value:
+
+- Dialogue files live as readable `.yml`.
+- Commands can create and edit dialogues while the server runs.
+- Chat capture can be added later for a comfortable authoring mode.
+- FancyNPC can call a custom action directly, similar to how FancyDialogs registers `open_dialog`.
+- NPC name and prefix styling can be stored once and reused automatically.
+
+Plugin cost:
+
+- Requires compiling and installing a `.jar`.
+- Must track Paper and FancyNPC API versions.
+
+## FancyNPC Setup
+
+When FancyNPC is installed, Simple Dialogue registers this custom action:
+
+```text
+simple_dialogue
+```
+
+Add it to both click types so the plugin can tell left from right:
 
 ```mcfunction
-function simple_dialogue:click/right
-function simple_dialogue:click/left
+/npc action guide LEFT_CLICK add simple_dialogue guide
+/npc action guide RIGHT_CLICK add simple_dialogue guide
 ```
 
-The functions assume FancyNPC runs the command as the player who clicked. If your FancyNPC action runs as console, use the plugin's player placeholder/selector support so the function executes as the clicking player.
+`guide` at the end is the dialogue id in `plugins/SimpleDialogue/dialogues/guide.yml`.
 
-## How it works
-
-`simple_dialogue:click/right` sets `@s sd.input` to `1`.
-
-`simple_dialogue:click/left` sets `@s sd.input` to `2`.
-
-Both functions then run:
+Command fallback, if you do not want to use the custom action:
 
 ```mcfunction
-function #simple_dialogue:resolve
-function #simple_dialogue:logic
+/npc action guide LEFT_CLICK add console_command sd click guide left {player}
+/npc action guide RIGHT_CLICK add console_command sd click guide right {player}
 ```
 
-Other datapacks can add functions to those tags:
+## Dialogue YAML
 
-```json
-{
-  "replace": false,
-  "values": [
-    "my_pack:dialogue/resolve",
-    "my_pack:dialogue/main"
-  ]
-}
+Example:
+
+```yaml
+id: guide
+npc:
+  fancy-npc: guide
+  name: Guide
+  name-color: green
+  bracket-color: gray
+start: "1"
+nodes:
+  "1":
+    speaker: npc
+    lines:
+      - "Road's closed until morning."
+      - "<gray>Right-click to ask why. Left-click to say goodbye.</gray>"
+    right: "1.1"
+    left: "1.2"
 ```
 
-Use `#simple_dialogue:resolve` to figure out which NPC was clicked, usually by adding a temporary player tag or setting `@s sd.npc`.
+NPC lines are automatically prefixed as:
 
-Use `#simple_dialogue:logic` to advance the player's dialogue node based on:
+```text
+<Guide> Road's closed until morning.
+```
 
-- `@s sd.input`: `1` is right click, `2` is left click.
-- `@s sd.node`: the player's current dialogue node.
-- `@s sd.npc`: optional numeric NPC id.
-- player tags such as `sd.npc.guard`, `quest.started`, or your own tags.
+with gray brackets and the configured NPC name color.
 
-The core click functions clear `sd.input`, `sd.npc`, and temporary `sd.click.*` tags after the logic tag runs.
-
-## Included demo
-
-Run:
+## Runtime Commands
 
 ```mcfunction
-/tag @s add sd.demo.guard
+/sd new <dialogue> <npc-name> [name-color]
+/sd npcname <dialogue> <name> <name-color> [bracket-color]
+/sd link <dialogue> <fancy-npc>
+/sd line add <dialogue> <node> <text...>
+/sd click <dialogue> <left|right> [player]
+/sd reload
 ```
 
-Then click an NPC wired to the two core functions. Right and left clicks will step through a small guard dialogue tree.
+The current command editor is intentionally small. The next useful layer would be an authoring session:
 
-Remove the demo tag with:
-
-```mcfunction
-/tag @s remove sd.demo.guard
+```text
+/sd edit guide
+/sd node 1
+/sd say Road's closed until morning.
+/sd choice right 1.1
+/sd choice left 1.2
 ```
 
-## Files to copy for your own dialogue
-
-- `data/simple_dialogue/function/example/resolve.mcfunction`
-- `data/simple_dialogue/function/example/guard.mcfunction`
-- `data/simple_dialogue/function/example/guard_nodes/*.mcfunction`
-- `data/simple_dialogue/tags/function/resolve.json`
-- `data/simple_dialogue/tags/function/logic.json`
+After that, a chat-capture mode could let you type long dialogue lines normally in chat and save them to the selected node.

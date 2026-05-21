@@ -1,0 +1,16 @@
+name: SimpleDialogue
+version: ${version}
+main: com.lazarbow.simpledialogue.SimpleDialoguePlugin
+api-version: "1.21"
+softdepend:
+  - FancyNpcs
+commands:
+  simpledialogue:
+    description: Manage SimpleDialogue conversations.
+    usage: /simpledialogue
+    aliases:
+      - sd
+permissions:
+  simpledialogue.admin:
+    description: Allows editing and reloading dialogue files.
+    default: op

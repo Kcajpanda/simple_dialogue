@@ -1,0 +1,3 @@
+messages:
+  npc-format: "<gray><</gray><name_color><npc_name></name_color><gray>></gray> "
+  player-format: "<gray><</gray><aqua><player_name></aqua><gray>></gray> "
