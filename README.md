@@ -147,6 +147,7 @@ Dialogue lines support MiniMessage formatting.
 /sd line add <dialogue> <node> <text...>
 /sd click <dialogue> <left|right> [player]
 /sd reset [player]
+/sd info <dialogue>
 /sd reload
 ```
 

@@ -244,22 +244,7 @@ public final class DialogueManager {
         }
 
         Map<String, Dialogue.DialogueNode> nodes = new LinkedHashMap<>();
-        for (Map.Entry<String, Object> entry : nodesSection.getValues(false).entrySet()) {
-            String nodeId = entry.getKey();
-            if (!(entry.getValue() instanceof ConfigurationSection nodeSection)) {
-                plugin.getLogger().warning("Skipping node " + nodeId + " in " + file.getName() + " because it is not a section.");
-                continue;
-            }
-
-            nodes.put(nodeId, new Dialogue.DialogueNode(
-                nodeId,
-                nodeSection.getString("speaker", "npc"),
-                nodeSection.getStringList("lines"),
-                nodeSection.getString("left"),
-                nodeSection.getString("right"),
-                nodeSection.getBoolean("end", false)
-            ));
-        }
+        collectNodes(file, nodes, "", nodesSection);
 
         return new Dialogue(id, npc, start, nodes);
     }
@@ -280,6 +265,53 @@ public final class DialogueManager {
         }
 
         return null;
+    }
+
+    private void collectNodes(File file, Map<String, Dialogue.DialogueNode> nodes, String prefix, ConfigurationSection parent) {
+        for (Map.Entry<String, Object> entry : parent.getValues(false).entrySet()) {
+            String key = entry.getKey();
+            String nodeId = prefix.isBlank() ? key : prefix + "." + key;
+            if (!(entry.getValue() instanceof ConfigurationSection nodeSection)) {
+                if (isNodeField(key)) {
+                    continue;
+                }
+                plugin.getLogger().warning("Skipping node " + nodeId + " in " + file.getName() + " because it is not a section.");
+                continue;
+            }
+
+            if (isDialogueNode(nodeSection)) {
+                nodes.put(nodeId, new Dialogue.DialogueNode(
+                    nodeId,
+                    nodeSection.getString("speaker", "npc"),
+                    nodeSection.getStringList("lines"),
+                    nodeSection.getString("left"),
+                    nodeSection.getString("right"),
+                    nodeSection.getBoolean("end", false)
+                ));
+            }
+
+            for (Map.Entry<String, Object> child : nodeSection.getValues(false).entrySet()) {
+                if (child.getValue() instanceof ConfigurationSection childSection && !isNodeField(child.getKey())) {
+                    collectNodes(file, nodes, nodeId, nodeSection);
+                    break;
+                }
+            }
+        }
+    }
+
+    private boolean isDialogueNode(ConfigurationSection section) {
+        return section.isList("lines")
+            || section.isString("speaker")
+            || section.isString("left")
+            || section.isString("right")
+            || section.isBoolean("end");
+    }
+
+    private boolean isNodeField(String key) {
+        return switch (key) {
+            case "speaker", "lines", "left", "right", "end" -> true;
+            default -> false;
+        };
     }
 
     private void save(YamlConfiguration yaml, File file) {

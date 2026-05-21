@@ -2,6 +2,7 @@ package com.lazarbow.simpledialogue.command;
 
 import com.lazarbow.simpledialogue.ClickSide;
 import com.lazarbow.simpledialogue.SimpleDialoguePlugin;
+import com.lazarbow.simpledialogue.dialogue.Dialogue;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Bukkit;
@@ -45,6 +46,7 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
             case "line" -> line(sender, args);
             case "new" -> create(sender, args);
             case "reset" -> reset(sender, args);
+            case "info" -> info(sender, args);
             default -> help(sender);
         }
 
@@ -54,9 +56,9 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return List.of("reload", "click", "npcname", "link", "line", "new", "reset");
+            return List.of("reload", "click", "npcname", "link", "line", "new", "reset", "info");
         }
-        if (args.length == 2 && List.of("click", "npcname", "link", "line").contains(args[0].toLowerCase())) {
+        if (args.length == 2 && List.of("click", "npcname", "link", "line", "info").contains(args[0].toLowerCase())) {
             return new ArrayList<>(plugin.dialogueManager().dialogueIds());
         }
         if (args.length == 3 && args[0].equalsIgnoreCase("click")) {
@@ -186,6 +188,24 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
         sender.sendMessage("Reset dialogue session for " + player.getName() + ".");
     }
 
+    private void info(CommandSender sender, String[] args) {
+        if (args.length < 2) {
+            sender.sendMessage("Usage: /sd info <dialogue>");
+            return;
+        }
+
+        Dialogue dialogue = plugin.dialogueManager().find(args[1]).orElse(null);
+        if (dialogue == null) {
+            sender.sendMessage("Unknown dialogue: " + args[1]);
+            return;
+        }
+
+        sender.sendMessage("Dialogue: " + dialogue.id());
+        sender.sendMessage("Start: " + dialogue.start());
+        sender.sendMessage("NPC: " + dialogue.npc().name() + " (" + dialogue.npc().fancyNpc() + ")");
+        sender.sendMessage("Nodes: " + String.join(", ", dialogue.nodes().keySet()));
+    }
+
     private void help(CommandSender sender) {
         sender.sendMessage("/sd click <dialogue> <left|right> [player]");
         sender.sendMessage("/sd new <dialogue> <npc-name> [name-color]");
@@ -193,6 +213,7 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
         sender.sendMessage("/sd link <dialogue> <fancy-npc>");
         sender.sendMessage("/sd line add <dialogue> <node> <text...>");
         sender.sendMessage("/sd reset [player]");
+        sender.sendMessage("/sd info <dialogue>");
         sender.sendMessage("/sd reload");
     }
 
