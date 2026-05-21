@@ -84,19 +84,17 @@ public final class DialogueManager {
         }
 
         Dialogue dialogue = optionalDialogue.get();
-        Session session = plugin.sessions().getOrStart(player.getUniqueId(), dialogue.id(), dialogue.start());
-        Dialogue.DialogueNode current = dialogue.nodes().getOrDefault(session.node(), dialogue.startNode());
+        Optional<Session> optionalSession = plugin.sessions().get(player.getUniqueId())
+            .filter(session -> session.dialogueId().equals(dialogue.id()));
+        if (optionalSession.isEmpty()) {
+            return startDialogue(player, dialogue);
+        }
+
+        Dialogue.DialogueNode current = dialogue.nodes().getOrDefault(optionalSession.get().node(), dialogue.startNode());
         if (current == null) {
             player.sendMessage(Component.text("Dialogue " + dialogue.id() + " has no start node."));
             plugin.sessions().clear(player.getUniqueId());
             return false;
-        }
-
-        sendNode(player, dialogue, current);
-
-        if (current.end()) {
-            plugin.sessions().clear(player.getUniqueId());
-            return true;
         }
 
         String next = side == ClickSide.LEFT ? current.left() : current.right();
@@ -105,7 +103,19 @@ public final class DialogueManager {
             return true;
         }
 
-        plugin.sessions().setNode(player.getUniqueId(), dialogue.id(), next);
+        Dialogue.DialogueNode nextNode = dialogue.nodes().get(next);
+        if (nextNode == null) {
+            player.sendMessage(Component.text("Dialogue " + dialogue.id() + " is missing node " + next + "."));
+            plugin.sessions().clear(player.getUniqueId());
+            return false;
+        }
+
+        sendNode(player, dialogue, nextNode);
+        if (nextNode.end()) {
+            plugin.sessions().clear(player.getUniqueId());
+        } else {
+            plugin.sessions().setNode(player.getUniqueId(), dialogue.id(), nextNode.id());
+        }
         return true;
     }
 
@@ -146,10 +156,15 @@ public final class DialogueManager {
         }
 
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-        String path = "nodes." + nodeId + ".lines";
-        List<String> lines = yaml.getStringList(path);
+        ConfigurationSection nodeSection = nodeSection(yaml, nodeId);
+        if (nodeSection == null) {
+            nodeSection = yaml.createSection("nodes." + nodeId);
+            nodeSection.set("speaker", "npc");
+        }
+
+        List<String> lines = nodeSection.getStringList("lines");
         lines.add(line);
-        yaml.set(path, lines);
+        nodeSection.set("lines", lines);
         save(yaml, file);
         reload();
         return true;
@@ -179,6 +194,22 @@ public final class DialogueManager {
         for (String line : node.lines()) {
             player.sendMessage(prefix(dialogue, node.speaker(), player).append(miniMessage.deserialize(line)));
         }
+    }
+
+    private boolean startDialogue(Player player, Dialogue dialogue) {
+        Dialogue.DialogueNode startNode = dialogue.startNode();
+        if (startNode == null) {
+            player.sendMessage(Component.text("Dialogue " + dialogue.id() + " has no start node."));
+            return false;
+        }
+
+        sendNode(player, dialogue, startNode);
+        if (startNode.end()) {
+            plugin.sessions().clear(player.getUniqueId());
+        } else {
+            plugin.sessions().setNode(player.getUniqueId(), dialogue.id(), startNode.id());
+        }
+        return true;
     }
 
     private Component prefix(Dialogue dialogue, String speaker, Player player) {
@@ -213,15 +244,20 @@ public final class DialogueManager {
         }
 
         Map<String, Dialogue.DialogueNode> nodes = new LinkedHashMap<>();
-        for (String nodeId : nodesSection.getKeys(false)) {
-            String path = "nodes." + nodeId + ".";
+        for (Map.Entry<String, Object> entry : nodesSection.getValues(false).entrySet()) {
+            String nodeId = entry.getKey();
+            if (!(entry.getValue() instanceof ConfigurationSection nodeSection)) {
+                plugin.getLogger().warning("Skipping node " + nodeId + " in " + file.getName() + " because it is not a section.");
+                continue;
+            }
+
             nodes.put(nodeId, new Dialogue.DialogueNode(
                 nodeId,
-                yaml.getString(path + "speaker", "npc"),
-                yaml.getStringList(path + "lines"),
-                yaml.getString(path + "left"),
-                yaml.getString(path + "right"),
-                yaml.getBoolean(path + "end", false)
+                nodeSection.getString("speaker", "npc"),
+                nodeSection.getStringList("lines"),
+                nodeSection.getString("left"),
+                nodeSection.getString("right"),
+                nodeSection.getBoolean("end", false)
             ));
         }
 
@@ -230,6 +266,20 @@ public final class DialogueManager {
 
     private File dialogueFile(String dialogueId) {
         return new File(plugin.getDataFolder(), "dialogues/" + dialogueId + ".yml");
+    }
+
+    private ConfigurationSection nodeSection(YamlConfiguration yaml, String nodeId) {
+        ConfigurationSection nodesSection = yaml.getConfigurationSection("nodes");
+        if (nodesSection == null) {
+            nodesSection = yaml.createSection("nodes");
+        }
+
+        Object rawNode = nodesSection.getValues(false).get(nodeId);
+        if (rawNode instanceof ConfigurationSection section) {
+            return section;
+        }
+
+        return null;
     }
 
     private void save(YamlConfiguration yaml, File file) {

@@ -2,6 +2,7 @@ package com.lazarbow.simpledialogue;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -12,6 +13,10 @@ import java.util.UUID;
  */
 public final class PlayerDialogueSessions {
     private final Map<UUID, Session> sessions = new HashMap<>();
+
+    public Optional<Session> get(UUID player) {
+        return Optional.ofNullable(sessions.get(player));
+    }
 
     public Session getOrStart(UUID player, String dialogueId, String startNode) {
         Session session = sessions.get(player);

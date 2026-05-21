@@ -44,6 +44,7 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
             case "link" -> link(sender, args);
             case "line" -> line(sender, args);
             case "new" -> create(sender, args);
+            case "reset" -> reset(sender, args);
             default -> help(sender);
         }
 
@@ -53,7 +54,7 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return List.of("reload", "click", "npcname", "link", "line", "new");
+            return List.of("reload", "click", "npcname", "link", "line", "new", "reset");
         }
         if (args.length == 2 && List.of("click", "npcname", "link", "line").contains(args[0].toLowerCase())) {
             return new ArrayList<>(plugin.dialogueManager().dialogueIds());
@@ -162,12 +163,36 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
         sender.sendMessage("Created dialogue " + args[1] + ".");
     }
 
+    private void reset(CommandSender sender, String[] args) {
+        Player player;
+        if (args.length >= 2) {
+            if (!requireAdmin(sender)) {
+                return;
+            }
+            player = Bukkit.getPlayerExact(args[1]);
+        } else if (sender instanceof Player senderPlayer) {
+            player = senderPlayer;
+        } else {
+            sender.sendMessage("Usage: /sd reset [player]");
+            return;
+        }
+
+        if (player == null) {
+            sender.sendMessage("Player not found.");
+            return;
+        }
+
+        plugin.sessions().clear(player.getUniqueId());
+        sender.sendMessage("Reset dialogue session for " + player.getName() + ".");
+    }
+
     private void help(CommandSender sender) {
         sender.sendMessage("/sd click <dialogue> <left|right> [player]");
         sender.sendMessage("/sd new <dialogue> <npc-name> [name-color]");
         sender.sendMessage("/sd npcname <dialogue> <name> <name-color> [bracket-color]");
         sender.sendMessage("/sd link <dialogue> <fancy-npc>");
         sender.sendMessage("/sd line add <dialogue> <node> <text...>");
+        sender.sendMessage("/sd reset [player]");
         sender.sendMessage("/sd reload");
     }
 

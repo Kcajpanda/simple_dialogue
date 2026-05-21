@@ -146,6 +146,7 @@ Dialogue lines support MiniMessage formatting.
 /sd link <dialogue> <fancy-npc>
 /sd line add <dialogue> <node> <text...>
 /sd click <dialogue> <left|right> [player]
+/sd reset [player]
 /sd reload
 ```
 
