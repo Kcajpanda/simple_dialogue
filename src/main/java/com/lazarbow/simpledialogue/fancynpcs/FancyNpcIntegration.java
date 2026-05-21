@@ -3,6 +3,9 @@ package com.lazarbow.simpledialogue.fancynpcs;
 import com.lazarbow.simpledialogue.SimpleDialoguePlugin;
 import de.oliver.fancynpcs.api.FancyNpcsPlugin;
 
+/**
+ * Registers and unregisters Simple Dialogue's custom FancyNPC action.
+ */
 public final class FancyNpcIntegration {
     private final SimpleDialoguePlugin plugin;
     private FancyNpcSimpleDialogueAction action;

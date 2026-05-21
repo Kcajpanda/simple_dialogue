@@ -4,6 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Tracks each player's active dialogue and current node in memory.
+ *
+ * <p>Sessions intentionally reset on plugin reload/server restart so YAML remains the source
+ * of truth while player progress is lightweight.</p>
+ */
 public final class PlayerDialogueSessions {
     private final Map<UUID, Session> sessions = new HashMap<>();
 

@@ -1,5 +1,8 @@
 package com.lazarbow.simpledialogue;
 
+/**
+ * The two interaction inputs Simple Dialogue understands.
+ */
 public enum ClickSide {
     LEFT,
     RIGHT;

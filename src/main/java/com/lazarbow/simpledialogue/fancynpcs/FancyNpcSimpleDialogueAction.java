@@ -9,6 +9,9 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * FancyNPC action implementation for {@code simple_dialogue <dialogueId>}.
+ */
 public final class FancyNpcSimpleDialogueAction extends NpcAction {
     private final SimpleDialoguePlugin plugin;
 

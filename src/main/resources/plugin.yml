@@ -1,7 +1,7 @@
 name: SimpleDialogue
 version: ${version}
 main: com.lazarbow.simpledialogue.SimpleDialoguePlugin
-api-version: "1.21"
+api-version: "26.1.2"
 softdepend:
   - FancyNpcs
 commands:

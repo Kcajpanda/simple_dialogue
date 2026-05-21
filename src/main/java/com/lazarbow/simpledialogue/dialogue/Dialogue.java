@@ -3,6 +3,9 @@ package com.lazarbow.simpledialogue.dialogue;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Immutable representation of one loaded dialogue YAML file.
+ */
 public record Dialogue(
     String id,
     NpcProfile npc,

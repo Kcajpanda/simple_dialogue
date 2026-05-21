@@ -1,24 +1,26 @@
+import org.gradle.external.javadoc.StandardJavadocDocletOptions
+
 plugins {
     java
-    id("xyz.jpenilla.run-paper") version "2.3.1"
 }
 
 group = "com.lazarbow"
 version = "0.1.0"
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
+    withJavadocJar()
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
-    compileOnly("de.oliver:FancyNpcs:2.9.2")
+    compileOnly("io.papermc.paper:paper-api:26.1.2.build.63-stable")
+    compileOnly("de.oliver:FancyNpcs:2.10.0")
 }
 
 tasks {
     compileJava {
         options.encoding = "UTF-8"
-        options.release.set(21)
+        options.release.set(25)
     }
 
     processResources {
@@ -28,7 +30,8 @@ tasks {
         }
     }
 
-    runServer {
-        minecraftVersion("1.21.4")
+    withType<Javadoc>().configureEach {
+        options.encoding = "UTF-8"
+        (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:none", "-quiet")
     }
 }

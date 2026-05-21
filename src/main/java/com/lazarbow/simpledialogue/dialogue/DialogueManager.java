@@ -19,6 +19,12 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+/**
+ * Loads dialogue YAML files and advances player conversations.
+ *
+ * <p>This class also centralizes NPC/player text formatting so every NPC line receives
+ * the configured display-name prefix automatically.</p>
+ */
 public final class DialogueManager {
     private final SimpleDialoguePlugin plugin;
     private final MiniMessage miniMessage = MiniMessage.miniMessage();
@@ -57,6 +63,12 @@ public final class DialogueManager {
         return Collections.unmodifiableSet(dialogues.keySet());
     }
 
+    /**
+     * Finds a loaded dialogue by id, ignoring case.
+     *
+     * @param id dialogue id from a YAML file
+     * @return the loaded dialogue when present
+     */
     public Optional<Dialogue> find(String id) {
         if (id == null) {
             return Optional.empty();

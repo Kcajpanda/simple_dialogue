@@ -11,6 +11,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
+/**
+ * Handles the /simpledialogue and /sd command surface.
+ *
+ * <p>The command set is deliberately small for now: enough to create a dialogue,
+ * edit display names, add lines, reload YAML, and support command-based NPC actions.</p>
+ */
 public final class SimpleDialogueCommand implements CommandExecutor, TabCompleter {
     private final SimpleDialoguePlugin plugin;
 

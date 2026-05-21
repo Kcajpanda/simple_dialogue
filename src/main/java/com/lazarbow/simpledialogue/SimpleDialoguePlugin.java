@@ -7,6 +7,12 @@ import java.io.File;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+/**
+ * Paper entrypoint for Simple Dialogue.
+ *
+ * <p>The plugin owns dialogue loading, player conversation sessions, command registration,
+ * and the optional FancyNPC action bridge.</p>
+ */
 public final class SimpleDialoguePlugin extends JavaPlugin {
     private DialogueManager dialogueManager;
     private PlayerDialogueSessions sessions;
