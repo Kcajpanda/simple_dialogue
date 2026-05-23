@@ -1,0 +1,60 @@
+# Server Testing Checklist
+
+Use this before publishing the beta release or Hangar version.
+
+## Environment
+
+- Paper reports version `26.1.2`
+- Java reports version `25` or newer
+- FancyNpcs loads successfully
+- Simple Dialogue loads successfully
+- Console logs `Registered FancyNPC action: simple_dialogue`
+
+## Startup Files
+
+- `plugins/SimpleDialogue/config.yml` exists
+- `plugins/SimpleDialogue/dialogues/guide.yml` exists
+- `/plugins` shows `SimpleDialogue`
+
+## Commands
+
+- `/sd info guide` shows the sample dialogue
+- `/sd reload` reloads without console errors
+- `/sd reset` clears your active session
+- `/sd new blacksmith Blacksmith gold` creates `blacksmith.yml`
+- `/sd link blacksmith blacksmith` prints the FancyNpcs action commands
+- `/sd line add blacksmith 1 Need something forged?` appends a line
+
+## FancyNpcs Integration
+
+- Add left-click action:
+
+```text
+/npc action guide LEFT_CLICK add simple_dialogue guide
+```
+
+- Add right-click action:
+
+```text
+/npc action guide RIGHT_CLICK add simple_dialogue guide
+```
+
+- Right-click starts the sample dialogue
+- Right-click follows the right branch
+- Left-click follows the left branch
+- End nodes clear the session so the next click starts over
+
+## YAML Editing
+
+- Edit a line in `guide.yml`
+- Run `/sd reload`
+- Confirm the changed line appears in-game
+- Add a missing branch target intentionally
+- Confirm the player sees a useful error and the session clears
+
+## Release Smoke Test
+
+- Run `.\gradlew.bat clean build`
+- Install only the release jar from `build/libs/`
+- Confirm the jar works without the repo present
+- Save the server log from a clean startup

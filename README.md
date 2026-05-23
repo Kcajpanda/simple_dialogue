@@ -1,18 +1,33 @@
 # Simple Dialogue
 
-Simple Dialogue is a Paper plugin for small left/right dialogue trees that can be triggered from FancyNPCs.
+Simple Dialogue is a small Paper plugin for left/right NPC dialogue trees. It was built to pair with FancyNpcs: add one custom FancyNpcs action to an NPC, then players can left-click or right-click through a YAML-backed conversation.
 
-It stores conversations in readable YAML files, remembers each player's current node while they click through a conversation, and automatically prefixes NPC dialogue with the configured NPC display name and colors.
+This is early beta software. It is usable for testing and small servers, but the command set and file format may still change before a stable release.
+
+## Features
+
+- YAML dialogue files in `plugins/SimpleDialogue/dialogues/`
+- Left-click and right-click branching
+- Per-player in-memory conversation sessions
+- MiniMessage support in dialogue lines
+- Configurable NPC/player chat prefixes
+- Custom FancyNpcs action: `simple_dialogue`
+- Command fallback for servers that prefer console-command NPC actions
+- Basic in-game commands for creating, linking, and adding lines
 
 ## Requirements
 
 - Paper `26.1.2`, tested against API `26.1.2.build.63-stable`
 - Java `25` or newer
-- FancyNPCs `2.10.0` or compatible newer version
+- FancyNpcs `2.10.0` or compatible newer version
 
-Paper changed plugin dependency coordinates for `26.1+`. This project uses the newer `26.1.2.build.63-stable` Paper API coordinate to match your server log.
+Spigot is not supported.
 
-## Building
+## Download
+
+For beta testing, download the jar from the latest GitHub Release and place it in your server's `plugins/` directory.
+
+You can also build from source:
 
 ```text
 ./gradlew clean build
@@ -30,42 +45,24 @@ The compiled plugin jar is written to:
 build/libs/simple-dialogue-0.1.0.jar
 ```
 
-## Pterodactyl Install
-
-Your Pterodactyl log shows the correct runtime already:
-
-```text
-openjdk version "25.0.2"
-Paper 26.1.2-63
-Implementing API version 26.1.2.build.63-stable
-```
-
-Keep using the `java_25` yolk for this server.
-
-Install steps:
+## Installation
 
 1. Stop the server.
-2. Upload `build/libs/simple-dialogue-0.1.0.jar` to `/plugins/`.
-3. Upload FancyNPCs `2.10.0` or newer to `/plugins/`.
+2. Install FancyNpcs `2.10.0` or newer.
+3. Upload `simple-dialogue-0.1.0.jar` to `plugins/`.
 4. Start the server.
-5. Look for `SimpleDialogue` in `/plugins`.
-6. Confirm this file exists after startup:
+5. Confirm `SimpleDialogue` appears in `/plugins`.
+6. Confirm the sample file was created:
 
 ```text
 plugins/SimpleDialogue/dialogues/guide.yml
 ```
 
-If Simple Dialogue loads but the custom `simple_dialogue` FancyNPC action does not appear, confirm FancyNPCs loaded first and check the console for `Registered FancyNPC action: simple_dialogue`.
+On startup, Simple Dialogue logs `Registered FancyNPC action: simple_dialogue` when FancyNpcs is present and enabled.
 
-## FancyNPC Setup
+## Quick Start
 
-Simple Dialogue registers a custom FancyNPC action:
-
-```text
-simple_dialogue
-```
-
-Add it to both click types so the plugin can tell left from right:
+Create or pick a FancyNpcs NPC named `guide`, then add the Simple Dialogue action to both click triggers:
 
 ```text
 /npc action guide LEFT_CLICK add simple_dialogue guide
@@ -74,43 +71,33 @@ Add it to both click types so the plugin can tell left from right:
 
 The final `guide` is the dialogue id from `plugins/SimpleDialogue/dialogues/guide.yml`.
 
-Command fallback:
-
-```text
-/npc action guide LEFT_CLICK add console_command sd click guide left {player}
-/npc action guide RIGHT_CLICK add console_command sd click guide right {player}
-```
-
-## First Test
-
-1. Create or pick a FancyNPC named `guide`.
-2. Add the two FancyNPC actions above.
-3. Join the server.
-4. Right-click the NPC once. You should see:
+Join the server and right-click the NPC once. You should see the sample dialogue:
 
 ```text
 <Guide> Road's closed until morning.
 <Guide> Right-click to ask why. Left-click to say goodbye.
 ```
 
-5. Right-click again to follow the right branch, or left-click to follow the left branch.
+Right-click again to follow the right branch, or left-click to follow the left branch.
 
-To create a new dialogue from in-game:
+## Command Fallback
 
-```text
-/sd new blacksmith Blacksmith gold
-/sd link blacksmith blacksmith
-/sd line add blacksmith 1 Need something forged?
-```
-
-Then wire your FancyNPC named `blacksmith`:
+If the custom FancyNpcs action is not available on your setup, use console-command actions instead:
 
 ```text
-/npc action blacksmith LEFT_CLICK add simple_dialogue blacksmith
-/npc action blacksmith RIGHT_CLICK add simple_dialogue blacksmith
+/npc action guide LEFT_CLICK add console_command sd click guide left {player}
+/npc action guide RIGHT_CLICK add console_command sd click guide right {player}
 ```
 
-## Dialogue YAML
+## Dialogue Files
+
+Dialogue files live in:
+
+```text
+plugins/SimpleDialogue/dialogues/
+```
+
+Each file is a YAML document:
 
 ```yaml
 id: guide
@@ -128,15 +115,19 @@ nodes:
       - "<gray>Right-click to ask why. Left-click to say goodbye.</gray>"
     right: "1.1"
     left: "1.2"
+  "1.1":
+    speaker: npc
+    lines:
+      - "Bandits near the bridge."
+    end: true
+  "1.2":
+    speaker: npc
+    lines:
+      - "Safe travels."
+    end: true
 ```
 
-NPC lines are automatically prefixed with the configured style:
-
-```text
-<Guide> Road's closed until morning.
-```
-
-Dialogue lines support MiniMessage formatting.
+See [docs/dialogues.md](docs/dialogues.md) for authoring tips and file-format details.
 
 ## Commands
 
@@ -151,7 +142,46 @@ Dialogue lines support MiniMessage formatting.
 /sd reload
 ```
 
-## Docs
+Admin/editing commands require `simpledialogue.admin`, which defaults to server operators.
+
+## Configuration
+
+`plugins/SimpleDialogue/config.yml` controls the chat prefixes prepended to dialogue lines:
+
+```yaml
+messages:
+  npc-format: "<bracket_color><</bracket_color><name_color><npc_name></name_color><bracket_color>></bracket_color> "
+  player-format: "<gray><</gray><aqua><player_name></aqua><gray>></gray> "
+```
+
+Available placeholders:
+
+- `<npc_name>`
+- `<player_name>`
+- `<name_color>` and `</name_color>`
+- `<bracket_color>` and `</bracket_color>`
+
+Dialogue lines themselves also support MiniMessage formatting.
+
+## Building Dialogue Trees
+
+For real dialogue trees, edit the YAML files directly. The in-game commands are useful for quick drafts, linking an NPC, and adding a line while testing, but YAML is the better source of truth for branching because you can see the whole tree at once.
+
+Recommended workflow:
+
+1. Use `/sd new <id> <npc-name>` to create the starter file.
+2. Use `/sd link <id> <fancy-npc>` to print the FancyNpcs action commands.
+3. Edit the YAML file for branches, endings, and MiniMessage styling.
+4. Run `/sd reload`.
+5. Test the NPC in-game.
+
+## Release And Publishing Notes
+
+- Draft beta release notes: [docs/release-v0.1.0.md](docs/release-v0.1.0.md)
+- Hangar page copy: [docs/hangar.md](docs/hangar.md)
+- Server test checklist: [docs/testing-checklist.md](docs/testing-checklist.md)
+
+## Javadocs
 
 Generate Javadocs locally:
 
@@ -165,15 +195,8 @@ Generated docs are written to:
 build/docs/javadoc
 ```
 
-The included GitHub Actions workflow can publish those Javadocs to GitHub Pages.
+The included GitHub Actions workflow can publish Javadocs to GitHub Pages. In the GitHub repository, open `Settings` -> `Pages`, set the source to `GitHub Actions`, then run or push the `Javadocs` workflow.
 
-To turn that on:
+## License
 
-1. Push this repo to GitHub, including `.github/workflows/javadocs.yml`.
-2. Open the repository on GitHub.
-3. Go to `Settings` -> `Pages`.
-4. Under `Build and deployment`, set `Source` to `GitHub Actions`.
-5. Push to `main`, or open `Actions` -> `Javadocs` -> `Run workflow`.
-6. After the workflow finishes, GitHub will show the Pages URL in the deployment summary.
-
-The workflow builds docs with Java 25 and publishes `build/docs/javadoc`.
+Simple Dialogue is licensed under the MIT License. See [LICENSE](LICENSE).

@@ -214,17 +214,42 @@ public final class DialogueManager {
 
     private Component prefix(Dialogue dialogue, String speaker, Player player) {
         if ("player".equalsIgnoreCase(speaker)) {
-            return miniMessage.deserialize(
-                "<gray><</gray><aqua>" + miniMessage.escapeTags(player.getName()) + "</aqua><gray>></gray> "
-            );
+            return miniMessage.deserialize(formatPlayerPrefix(player));
         }
 
         Dialogue.NpcProfile npc = dialogue.npc();
-        return miniMessage.deserialize(
-            "<" + npc.bracketColor() + "><</" + npc.bracketColor() + ">"
-                + "<" + npc.nameColor() + ">" + miniMessage.escapeTags(npc.name()) + "</" + npc.nameColor() + ">"
-                + "<" + npc.bracketColor() + ">></" + npc.bracketColor() + "> "
+        return miniMessage.deserialize(formatNpcPrefix(npc));
+    }
+
+    private String formatNpcPrefix(Dialogue.NpcProfile npc) {
+        String format = plugin.getConfig().getString(
+            "messages.npc-format",
+            "<gray><</gray><name_color><npc_name></name_color><gray>></gray> "
         );
+
+        return format
+            .replace("<name_color>", "<" + safeColor(npc.nameColor(), "green") + ">")
+            .replace("</name_color>", "</" + safeColor(npc.nameColor(), "green") + ">")
+            .replace("<bracket_color>", "<" + safeColor(npc.bracketColor(), "gray") + ">")
+            .replace("</bracket_color>", "</" + safeColor(npc.bracketColor(), "gray") + ">")
+            .replace("<npc_name>", miniMessage.escapeTags(npc.name()));
+    }
+
+    private String formatPlayerPrefix(Player player) {
+        String format = plugin.getConfig().getString(
+            "messages.player-format",
+            "<gray><</gray><aqua><player_name></aqua><gray>></gray> "
+        );
+
+        return format.replace("<player_name>", miniMessage.escapeTags(player.getName()));
+    }
+
+    private String safeColor(String color, String fallback) {
+        if (color == null || !color.matches("[a-zA-Z_]+")) {
+            return fallback;
+        }
+
+        return color.toLowerCase(Locale.ROOT);
     }
 
     private Dialogue loadDialogue(File file) {
