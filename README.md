@@ -10,6 +10,7 @@ This is early beta software. It is usable for testing and small servers, but the
 - Left-click and right-click branching
 - Per-player in-memory conversation sessions
 - MiniMessage support in dialogue lines
+- RPG-style choice prompts with `left-text` and `right-text`
 - Configurable NPC/player chat prefixes
 - Custom FancyNpcs action: `simple_dialogue`
 - Command fallback for servers that prefer console-command NPC actions
@@ -75,7 +76,7 @@ Join the server and right-click the NPC once. You should see the sample dialogue
 
 ```text
 <Guide> Road's closed until morning.
-<Guide> Right-click to ask why. Left-click to say goodbye.
+<Left> Say goodbye | <Right> Ask why
 ```
 
 Right-click again to follow the right branch, or left-click to follow the left branch.
@@ -112,7 +113,8 @@ nodes:
     speaker: npc
     lines:
       - "Road's closed until morning."
-      - "<gray>Right-click to ask why. Left-click to say goodbye.</gray>"
+    left-text: "Say goodbye"
+    right-text: "Ask why"
     right: "1.1"
     left: "1.2"
   "1.1":
@@ -152,6 +154,9 @@ Admin/editing commands require `simpledialogue.admin`, which defaults to server 
 messages:
   npc-format: "<bracket_color><</bracket_color><name_color><npc_name></name_color><bracket_color>></bracket_color> "
   player-format: "<gray><</gray><aqua><player_name></aqua><gray>></gray> "
+  choice-format: "<gray><</gray><red>Left</red><gray>></gray> <gray><left_choice></gray> <white>|</white> <gray><</gray><red>Right</red><gray>></gray> <gray><right_choice></gray>"
+  left-choice-format: "<gray><</gray><red>Left</red><gray>></gray> <gray><left_choice></gray>"
+  right-choice-format: "<gray><</gray><red>Right</red><gray>></gray> <gray><right_choice></gray>"
 ```
 
 Available placeholders:
@@ -160,6 +165,8 @@ Available placeholders:
 - `<player_name>`
 - `<name_color>` and `</name_color>`
 - `<bracket_color>` and `</bracket_color>`
+- `<left_choice>`
+- `<right_choice>`
 
 Dialogue lines themselves also support MiniMessage formatting.
 
@@ -177,8 +184,8 @@ Recommended workflow:
 
 ## Release And Publishing Notes
 
-- Draft beta release notes: [docs/release-v0.1.0.md](docs/release-v0.1.0.md)
 - Hangar page copy: [docs/hangar.md](docs/hangar.md)
+- Publishing and outreach notes: [docs/project-next-steps.md](docs/project-next-steps.md)
 - Server test checklist: [docs/testing-checklist.md](docs/testing-checklist.md)
 
 ## Javadocs

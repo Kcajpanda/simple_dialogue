@@ -194,6 +194,8 @@ public final class DialogueManager {
         for (String line : node.lines()) {
             player.sendMessage(prefix(dialogue, node.speaker(), player).append(miniMessage.deserialize(line)));
         }
+
+        choicePrompt(node).ifPresent(prompt -> player.sendMessage(miniMessage.deserialize(prompt)));
     }
 
     private boolean startDialogue(Player player, Dialogue dialogue) {
@@ -242,6 +244,49 @@ public final class DialogueManager {
         );
 
         return format.replace("<player_name>", miniMessage.escapeTags(player.getName()));
+    }
+
+    private Optional<String> choicePrompt(Dialogue.DialogueNode node) {
+        boolean hasLeft = hasBranch(node.left()) && hasChoiceText(node.leftText());
+        boolean hasRight = hasBranch(node.right()) && hasChoiceText(node.rightText());
+        if (!hasLeft && !hasRight) {
+            return Optional.empty();
+        }
+
+        if (hasLeft && hasRight) {
+            String format = plugin.getConfig().getString(
+                "messages.choice-format",
+                "<gray><</gray><red>Left</red><gray>></gray> <gray><left_choice></gray> <white>|</white> "
+                    + "<gray><</gray><red>Right</red><gray>></gray> <gray><right_choice></gray>"
+            );
+
+            return Optional.of(format
+                .replace("<left_choice>", miniMessage.escapeTags(choiceText(node.leftText())))
+                .replace("<right_choice>", miniMessage.escapeTags(choiceText(node.rightText()))));
+        }
+
+        String format = plugin.getConfig().getString(
+            hasLeft ? "messages.left-choice-format" : "messages.right-choice-format",
+            hasLeft
+                ? "<gray><</gray><red>Left</red><gray>></gray> <gray><left_choice></gray>"
+                : "<gray><</gray><red>Right</red><gray>></gray> <gray><right_choice></gray>"
+        );
+
+        return Optional.of(format
+            .replace("<left_choice>", miniMessage.escapeTags(choiceText(node.leftText())))
+            .replace("<right_choice>", miniMessage.escapeTags(choiceText(node.rightText()))));
+    }
+
+    private boolean hasBranch(String nodeId) {
+        return nodeId != null && !nodeId.isBlank();
+    }
+
+    private String choiceText(String text) {
+        return text == null ? "" : text;
+    }
+
+    private boolean hasChoiceText(String text) {
+        return text != null && !text.isBlank();
     }
 
     private String safeColor(String color, String fallback) {
@@ -311,6 +356,8 @@ public final class DialogueManager {
                     nodeSection.getStringList("lines"),
                     nodeSection.getString("left"),
                     nodeSection.getString("right"),
+                    nodeSection.getString("left-text", ""),
+                    nodeSection.getString("right-text", ""),
                     nodeSection.getBoolean("end", false)
                 ));
             }
@@ -329,12 +376,14 @@ public final class DialogueManager {
             || section.isString("speaker")
             || section.isString("left")
             || section.isString("right")
+            || section.isString("left-text")
+            || section.isString("right-text")
             || section.isBoolean("end");
     }
 
     private boolean isNodeField(String key) {
         return switch (key) {
-            case "speaker", "lines", "left", "right", "end" -> true;
+            case "speaker", "lines", "left", "right", "left-text", "right-text", "end" -> true;
             default -> false;
         };
     }

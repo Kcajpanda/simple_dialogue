@@ -2,7 +2,6 @@ package com.lazarbow.simpledialogue.fancynpcs;
 
 import com.lazarbow.simpledialogue.ClickSide;
 import com.lazarbow.simpledialogue.SimpleDialoguePlugin;
-import de.oliver.fancynpcs.api.actions.ActionTrigger;
 import de.oliver.fancynpcs.api.actions.NpcAction;
 import de.oliver.fancynpcs.api.actions.executor.ActionExecutionContext;
 import org.bukkit.entity.Player;

@@ -25,6 +25,8 @@ public record Dialogue(
         List<String> lines,
         String left,
         String right,
+        String leftText,
+        String rightText,
         boolean end
     ) {
     }

@@ -48,11 +48,23 @@ The last argument is the dialogue id from the YAML file, such as `guide` for `pl
 
 ## Links
 
-- Source: add GitHub repo URL
-- Issues: add GitHub issues URL
-- Documentation: add README or GitHub Pages URL
+- Source: https://github.com/Kcajpanda/simple_dialogue
+- Issues: https://github.com/Kcajpanda/simple_dialogue/issues
+- Documentation: https://github.com/Kcajpanda/simple_dialogue#readme
+- Release: https://github.com/Kcajpanda/simple_dialogue/releases/tag/v0.1.0
 - License: MIT
 
 ## Version Channel Text
 
 `v0.1.0` is the first public beta. Please test on a non-production server first and report issues with your Paper, Java, and FancyNpcs versions.
+
+## Manual Version Checklist
+
+- Version name: `v0.1.0`
+- Channel: `Beta` or `Release`
+- Platform: Paper
+- Platform versions: `26.1.2`
+- File: `simple-dialogue-0.1.0.jar`
+- External release URL: `https://github.com/Kcajpanda/simple_dialogue/releases/tag/v0.1.0`
+- Dependency: FancyNpcs, required
+- Save/publish the version, then check the public `/versions` page while logged out or in a private window.

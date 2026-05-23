@@ -10,14 +10,16 @@ nodes:
     speaker: npc
     lines:
       - "Road's closed until morning."
-      - "<gray>Right-click to ask why. Left-click to say goodbye.</gray>"
+    left-text: "Say goodbye"
+    right-text: "Ask why"
     right: "1.1"
     left: "1.2"
   "1.1":
     speaker: npc
     lines:
       - "Bandits near the bridge."
-      - "<gray>Right-click to offer help. Left-click to back away.</gray>"
+    left-text: "Back away"
+    right-text: "Offer help"
     right: "1.1.1"
     left: "1.1.2"
   "1.2":

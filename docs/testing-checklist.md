@@ -40,6 +40,7 @@ Use this before publishing the beta release or Hangar version.
 ```
 
 - Right-click starts the sample dialogue
+- Sample branch prompts appear as `<Left> ... | <Right> ...`
 - Right-click follows the right branch
 - Left-click follows the left branch
 - End nodes clear the session so the next click starts over

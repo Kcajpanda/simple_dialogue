@@ -55,7 +55,8 @@ nodes:
     speaker: npc
     lines:
       - "Need something forged?"
-      - "<gray>Right-click for work. Left-click to leave.</gray>"
+    left-text: "Leave"
+    right-text: "Ask for work"
     right: "1.1"
     left: "1.2"
   "1.1":
@@ -76,9 +77,34 @@ nodes:
 - `lines`: messages sent when the node is reached
 - `left`: node id reached by a left-click
 - `right`: node id reached by a right-click
+- `left-text`: choice text shown for the left-click option
+- `right-text`: choice text shown for the right-click option
 - `end`: clears the player's active dialogue session after the node is sent
 
 If a clicked branch is missing or blank, the conversation ends silently.
+
+## Choice Prompts
+
+When a node has both a branch and matching choice text, Simple Dialogue sends a separate prompt line after the dialogue text.
+
+```yaml
+"1":
+  speaker: npc
+  lines:
+    - "Need something forged?"
+  left: "1.1"
+  left-text: "Leave"
+  right: "1.2"
+  right-text: "Ask for work"
+```
+
+With the default config, that appears like:
+
+```text
+<Left> Leave | <Right> Ask for work
+```
+
+Choice prompt colors and separators can be changed in `config.yml`.
 
 ## Nested Node Style
 
