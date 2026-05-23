@@ -1,6 +1,6 @@
 name: SimpleDialogue
 version: ${version}
-main: com.lazarbow.simpledialogue.SimpleDialoguePlugin
+main: io.github.kcajpanda.simpledialogue.SimpleDialoguePlugin
 api-version: "26.1.2"
 softdepend:
   - FancyNpcs

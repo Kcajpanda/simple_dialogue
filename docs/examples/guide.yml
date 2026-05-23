@@ -1,0 +1,39 @@
+id: guide
+npc:
+  fancy-npc: guide
+  name: Guide
+  name-color: green
+  bracket-color: gray
+start: "1"
+nodes:
+  "1":
+    speaker: npc
+    lines:
+      - "Road's closed until morning."
+    left-text: "Say goodbye"
+    right-text: "Ask why"
+    right: "1.1"
+    left: "1.2"
+  "1.1":
+    speaker: npc
+    lines:
+      - "Bandits near the bridge."
+    left-text: "Back away"
+    right-text: "Offer help"
+    right: "1.1.1"
+    left: "1.1.2"
+  "1.2":
+    speaker: npc
+    lines:
+      - "Safe travels."
+    end: true
+  "1.1.1":
+    speaker: npc
+    lines:
+      - "Brave. Bring me a bandit banner and I'll open the gate."
+    end: true
+  "1.1.2":
+    speaker: npc
+    lines:
+      - "Wise choice. Keep your head down."
+    end: true

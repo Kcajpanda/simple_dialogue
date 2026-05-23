@@ -1,6 +1,6 @@
-package com.lazarbow.simpledialogue.fancynpcs;
+package io.github.kcajpanda.simpledialogue.fancynpcs;
 
-import com.lazarbow.simpledialogue.SimpleDialoguePlugin;
+import io.github.kcajpanda.simpledialogue.SimpleDialoguePlugin;
 import de.oliver.fancynpcs.api.FancyNpcsPlugin;
 
 /**

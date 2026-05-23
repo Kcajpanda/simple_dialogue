@@ -1,4 +1,4 @@
-package com.lazarbow.simpledialogue.dialogue;
+package io.github.kcajpanda.simpledialogue.dialogue;
 
 import java.util.List;
 import java.util.Map;

@@ -1,8 +1,8 @@
-package com.lazarbow.simpledialogue;
+package io.github.kcajpanda.simpledialogue;
 
-import com.lazarbow.simpledialogue.command.SimpleDialogueCommand;
-import com.lazarbow.simpledialogue.dialogue.DialogueManager;
-import com.lazarbow.simpledialogue.fancynpcs.FancyNpcIntegration;
+import io.github.kcajpanda.simpledialogue.command.SimpleDialogueCommand;
+import io.github.kcajpanda.simpledialogue.dialogue.DialogueManager;
+import io.github.kcajpanda.simpledialogue.fancynpcs.FancyNpcIntegration;
 import java.io.File;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;

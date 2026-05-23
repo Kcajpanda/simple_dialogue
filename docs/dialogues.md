@@ -106,6 +106,8 @@ With the default config, that appears like:
 
 Choice prompt colors and separators can be changed in `config.yml`.
 
+Choice text is treated as plain text. Put colors, brackets, and separators in the config formats instead of inside `left-text` or `right-text`.
+
 ## Nested Node Style
 
 Simple Dialogue supports flat node ids like `"1.1"` and nested YAML sections. This means these shapes are both valid:

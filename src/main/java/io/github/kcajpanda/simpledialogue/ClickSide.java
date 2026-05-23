@@ -1,4 +1,4 @@
-package com.lazarbow.simpledialogue;
+package io.github.kcajpanda.simpledialogue;
 
 /**
  * The two interaction inputs Simple Dialogue understands.

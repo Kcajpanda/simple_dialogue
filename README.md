@@ -43,14 +43,14 @@ On Windows:
 The compiled plugin jar is written to:
 
 ```text
-build/libs/simple-dialogue-0.1.0.jar
+build/libs/simple-dialogue-0.1.1.jar
 ```
 
 ## Installation
 
 1. Stop the server.
 2. Install FancyNpcs `2.10.0` or newer.
-3. Upload `simple-dialogue-0.1.0.jar` to `plugins/`.
+3. Upload `simple-dialogue-0.1.1.jar` to `plugins/`.
 4. Start the server.
 5. Confirm `SimpleDialogue` appears in `/plugins`.
 6. Confirm the sample file was created:
@@ -187,6 +187,8 @@ Recommended workflow:
 - Hangar page copy: [docs/hangar.md](docs/hangar.md)
 - Publishing and outreach notes: [docs/project-next-steps.md](docs/project-next-steps.md)
 - Server test checklist: [docs/testing-checklist.md](docs/testing-checklist.md)
+- Updated sample guide dialogue: [docs/examples/guide.yml](docs/examples/guide.yml)
+- Draft `v0.1.1` release notes: [docs/release-v0.1.1.md](docs/release-v0.1.1.md)
 
 ## Javadocs
 

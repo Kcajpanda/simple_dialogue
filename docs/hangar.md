@@ -17,6 +17,7 @@ This is a beta release intended for testing, small servers, and feedback.
 - Per-player active dialogue sessions
 - MiniMessage dialogue lines
 - Configurable NPC/player prefixes
+- RPG-style choice prompts with `left-text` and `right-text`
 - Sample dialogue included on first startup
 - Basic admin commands for creating and linking dialogues
 
@@ -51,20 +52,20 @@ The last argument is the dialogue id from the YAML file, such as `guide` for `pl
 - Source: https://github.com/Kcajpanda/simple_dialogue
 - Issues: https://github.com/Kcajpanda/simple_dialogue/issues
 - Documentation: https://github.com/Kcajpanda/simple_dialogue#readme
-- Release: https://github.com/Kcajpanda/simple_dialogue/releases/tag/v0.1.0
+- Release: https://github.com/Kcajpanda/simple_dialogue/releases/tag/v0.1.1
 - License: MIT
 
 ## Version Channel Text
 
-`v0.1.0` is the first public beta. Please test on a non-production server first and report issues with your Paper, Java, and FancyNpcs versions.
+`v0.1.1` adds RPG-style choice prompts and updates the sample guide dialogue. Please test on a non-production server first and report issues with your Paper, Java, and FancyNpcs versions.
 
 ## Manual Version Checklist
 
-- Version name: `v0.1.0`
+- Version name: `v0.1.1`
 - Channel: `Beta` or `Release`
 - Platform: Paper
 - Platform versions: `26.1.2`
-- File: `simple-dialogue-0.1.0.jar`
-- External release URL: `https://github.com/Kcajpanda/simple_dialogue/releases/tag/v0.1.0`
+- File: `simple-dialogue-0.1.1.jar`
+- External release URL: `https://github.com/Kcajpanda/simple_dialogue/releases/tag/v0.1.1`
 - Dependency: FancyNpcs, required
 - Save/publish the version, then check the public `/versions` page while logged out or in a private window.

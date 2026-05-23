@@ -4,8 +4,8 @@ plugins {
     java
 }
 
-group = "com.lazarbow"
-version = "0.1.0"
+group = "io.github.kcajpanda"
+version = "0.1.1"
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(25))

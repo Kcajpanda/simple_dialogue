@@ -1,7 +1,7 @@
-package com.lazarbow.simpledialogue.fancynpcs;
+package io.github.kcajpanda.simpledialogue.fancynpcs;
 
-import com.lazarbow.simpledialogue.ClickSide;
-import com.lazarbow.simpledialogue.SimpleDialoguePlugin;
+import io.github.kcajpanda.simpledialogue.ClickSide;
+import io.github.kcajpanda.simpledialogue.SimpleDialoguePlugin;
 import de.oliver.fancynpcs.api.actions.NpcAction;
 import de.oliver.fancynpcs.api.actions.executor.ActionExecutionContext;
 import org.bukkit.entity.Player;

@@ -1,8 +1,8 @@
-package com.lazarbow.simpledialogue.command;
+package io.github.kcajpanda.simpledialogue.command;
 
-import com.lazarbow.simpledialogue.ClickSide;
-import com.lazarbow.simpledialogue.SimpleDialoguePlugin;
-import com.lazarbow.simpledialogue.dialogue.Dialogue;
+import io.github.kcajpanda.simpledialogue.ClickSide;
+import io.github.kcajpanda.simpledialogue.SimpleDialoguePlugin;
+import io.github.kcajpanda.simpledialogue.dialogue.Dialogue;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Bukkit;

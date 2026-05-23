@@ -1,8 +1,8 @@
-package com.lazarbow.simpledialogue.dialogue;
+package io.github.kcajpanda.simpledialogue.dialogue;
 
-import com.lazarbow.simpledialogue.ClickSide;
-import com.lazarbow.simpledialogue.PlayerDialogueSessions.Session;
-import com.lazarbow.simpledialogue.SimpleDialoguePlugin;
+import io.github.kcajpanda.simpledialogue.ClickSide;
+import io.github.kcajpanda.simpledialogue.PlayerDialogueSessions.Session;
+import io.github.kcajpanda.simpledialogue.SimpleDialoguePlugin;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
