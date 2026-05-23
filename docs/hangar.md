@@ -1,23 +1,4 @@
-# Hangar Page Draft
-
-Use this as the starting text for the Hangar project page.
-
-## Project Name
-
-Simple Dialogue
-
-## Short Description
-
-Small YAML dialogue trees for FancyNpcs, with left-click/right-click branching.
-
-## Category Suggestions
-
-- Chat
-- Roleplay
-- Miscellaneous
-- Utility
-
-## Long Description
+## Summary
 
 Simple Dialogue is a lightweight Paper plugin for small NPC conversation trees.
 
