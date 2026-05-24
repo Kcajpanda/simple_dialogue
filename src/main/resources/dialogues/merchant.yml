@@ -1,0 +1,47 @@
+id: merchant
+npc:
+  fancy-npc: merchant
+  name: Merchant
+  name-color: yellow
+  bracket-color: gray
+start: "1"
+nodes:
+  "1":
+    speaker: npc
+    lines:
+      - "Welcome, traveler. Looking to buy, sell, or hear a rumor?"
+    left-text: "Ask for rumors"
+    right-text: "Browse goods"
+    left: "rumor"
+    right: "goods"
+  rumor:
+    speaker: npc
+    lines:
+      - "The old well has been whispering again."
+    left-text: "Leave"
+    right-text: "Ask about the well"
+    left: "bye"
+    right: "well"
+  goods:
+    speaker: npc
+    lines:
+      - "Fresh torches, dry bread, and one suspiciously shiny apple."
+    left-text: "Leave"
+    right-text: "Ask about the apple"
+    left: "bye"
+    right: "apple"
+  well:
+    speaker: npc
+    lines:
+      - "Drop a copper in after sunset. If it sings back, do not answer."
+    end: true
+  apple:
+    speaker: npc
+    lines:
+      - "Found it under a tree that was not there yesterday. Two emeralds."
+    end: true
+  bye:
+    speaker: npc
+    lines:
+      - "Safe roads and full pockets."
+    end: true

@@ -63,6 +63,25 @@ public final class DialogueManager {
         return Collections.unmodifiableSet(dialogues.keySet());
     }
 
+    public List<ValidationIssue> validateAll() {
+        if (dialogues.isEmpty()) {
+            return List.of(ValidationIssue.error("No dialogue files are loaded."));
+        }
+
+        return dialogues.values().stream()
+            .flatMap(dialogue -> validate(dialogue).stream())
+            .toList();
+    }
+
+    public List<ValidationIssue> validate(String dialogueId) {
+        Optional<Dialogue> optionalDialogue = find(dialogueId);
+        if (optionalDialogue.isEmpty()) {
+            return List.of(ValidationIssue.error("Unknown dialogue: " + dialogueId));
+        }
+
+        return validate(optionalDialogue.get());
+    }
+
     /**
      * Finds a loaded dialogue by id, ignoring case.
      *
@@ -388,6 +407,62 @@ public final class DialogueManager {
         };
     }
 
+    private List<ValidationIssue> validate(Dialogue dialogue) {
+        List<ValidationIssue> issues = new java.util.ArrayList<>();
+        if (dialogue.id() == null || dialogue.id().isBlank()) {
+            issues.add(ValidationIssue.error("Dialogue has a blank id."));
+        }
+        if (dialogue.start() == null || dialogue.start().isBlank()) {
+            issues.add(ValidationIssue.error(dialogue.id() + ": start node is blank."));
+        } else if (!dialogue.nodes().containsKey(dialogue.start())) {
+            issues.add(ValidationIssue.error(dialogue.id() + ": start node '" + dialogue.start() + "' does not exist."));
+        }
+        if (dialogue.nodes().isEmpty()) {
+            issues.add(ValidationIssue.error(dialogue.id() + ": no nodes are defined."));
+        }
+
+        for (Dialogue.DialogueNode node : dialogue.nodes().values()) {
+            validateNode(dialogue, node, issues);
+        }
+
+        return issues;
+    }
+
+    private void validateNode(Dialogue dialogue, Dialogue.DialogueNode node, List<ValidationIssue> issues) {
+        String prefix = dialogue.id() + " node " + node.id() + ": ";
+        if (!List.of("npc", "player").contains(node.speaker().toLowerCase(Locale.ROOT))) {
+            issues.add(ValidationIssue.warning(prefix + "speaker should be 'npc' or 'player'."));
+        }
+        if (node.lines().isEmpty()) {
+            issues.add(ValidationIssue.warning(prefix + "has no lines."));
+        }
+        validateBranch(dialogue, node.id(), "left", node.left(), node.leftText(), issues);
+        validateBranch(dialogue, node.id(), "right", node.right(), node.rightText(), issues);
+        if (node.end() && (hasBranch(node.left()) || hasBranch(node.right()))) {
+            issues.add(ValidationIssue.warning(prefix + "is marked end:true but also has branch targets."));
+        }
+    }
+
+    private void validateBranch(
+        Dialogue dialogue,
+        String nodeId,
+        String side,
+        String target,
+        String choiceText,
+        List<ValidationIssue> issues
+    ) {
+        if (!hasBranch(target)) {
+            return;
+        }
+        String prefix = dialogue.id() + " node " + nodeId + " " + side + ": ";
+        if (!dialogue.nodes().containsKey(target)) {
+            issues.add(ValidationIssue.error(prefix + "target '" + target + "' does not exist."));
+        }
+        if (!hasChoiceText(choiceText)) {
+            issues.add(ValidationIssue.warning(prefix + "has a branch target but no " + side + "-text."));
+        }
+    }
+
     private void save(YamlConfiguration yaml, File file) {
         try {
             File parent = file.getParentFile();
@@ -403,5 +478,20 @@ public final class DialogueManager {
     private String stripExtension(String name) {
         int dot = name.lastIndexOf('.');
         return dot == -1 ? name : name.substring(0, dot);
+    }
+
+    public record ValidationIssue(Severity severity, String message) {
+        public static ValidationIssue error(String message) {
+            return new ValidationIssue(Severity.ERROR, message);
+        }
+
+        public static ValidationIssue warning(String message) {
+            return new ValidationIssue(Severity.WARNING, message);
+        }
+    }
+
+    public enum Severity {
+        ERROR,
+        WARNING
     }
 }

@@ -22,7 +22,7 @@ For the first version, check:
 - The version has at least one compatible Paper version selected.
 - The visibility/publication button was completed after the file/link step.
 
-For the current update, use `v0.1.1`, the GitHub Release URL, Paper `26.1.2`, and the `simple-dialogue-0.1.1.jar` file.
+For the current update, use `v0.1.2`, the GitHub Release URL, Paper `26.1.2`, and the `simple-dialogue-0.1.2.jar` file.
 
 ## Other Plugin Sites
 
@@ -47,7 +47,7 @@ Hi! I made a small MIT-licensed Paper plugin that integrates with FancyNpcs thro
 It lets server owners wire left/right-click NPC dialogue trees from YAML files. I tested it with FancyNpcs 2.10.0 on Paper 26.1.2 and it is now in beta:
 
 https://github.com/Kcajpanda/simple_dialogue
-https://github.com/Kcajpanda/simple_dialogue/releases/tag/v0.1.1
+https://github.com/Kcajpanda/simple_dialogue/releases/tag/v0.1.2
 
 No pressure, but I would appreciate feedback on whether I am using the FancyNpcs action API in the intended way. If this is useful to your users, I would also be happy to adjust the docs or naming to make the integration clearer.
 ```

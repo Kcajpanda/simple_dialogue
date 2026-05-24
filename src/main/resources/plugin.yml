@@ -1,6 +1,9 @@
 name: SimpleDialogue
 version: ${version}
 main: io.github.kcajpanda.simpledialogue.SimpleDialoguePlugin
+description: Small YAML dialogue trees for FancyNpcs.
+author: Kcajpanda
+website: https://github.com/Kcajpanda/simple_dialogue
 api-version: "26.1.2"
 softdepend:
   - FancyNpcs

@@ -15,6 +15,7 @@ This is early beta software. It is usable for testing and small servers, but the
 - Custom FancyNpcs action: `simple_dialogue`
 - Command fallback for servers that prefer console-command NPC actions
 - Basic in-game commands for creating, linking, and adding lines
+- `/sd validate` for checking dialogue tree mistakes
 
 ## Requirements
 
@@ -43,14 +44,14 @@ On Windows:
 The compiled plugin jar is written to:
 
 ```text
-build/libs/simple-dialogue-0.1.1.jar
+build/libs/simple-dialogue-0.1.2.jar
 ```
 
 ## Installation
 
 1. Stop the server.
 2. Install FancyNpcs `2.10.0` or newer.
-3. Upload `simple-dialogue-0.1.1.jar` to `plugins/`.
+3. Upload `simple-dialogue-0.1.2.jar` to `plugins/`.
 4. Start the server.
 5. Confirm `SimpleDialogue` appears in `/plugins`.
 6. Confirm the sample file was created:
@@ -141,6 +142,7 @@ See [docs/dialogues.md](docs/dialogues.md) for authoring tips and file-format de
 /sd click <dialogue> <left|right> [player]
 /sd reset [player]
 /sd info <dialogue>
+/sd validate [dialogue]
 /sd reload
 ```
 
@@ -188,7 +190,8 @@ Recommended workflow:
 - Publishing and outreach notes: [docs/project-next-steps.md](docs/project-next-steps.md)
 - Server test checklist: [docs/testing-checklist.md](docs/testing-checklist.md)
 - Updated sample guide dialogue: [docs/examples/guide.yml](docs/examples/guide.yml)
-- Draft `v0.1.1` release notes: [docs/release-v0.1.1.md](docs/release-v0.1.1.md)
+- Example merchant dialogue: [docs/examples/merchant.yml](docs/examples/merchant.yml)
+- Draft `v0.1.2` release notes: [docs/release-v0.1.2.md](docs/release-v0.1.2.md)
 
 ## Javadocs
 

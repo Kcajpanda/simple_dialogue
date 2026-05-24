@@ -3,6 +3,8 @@ package io.github.kcajpanda.simpledialogue.command;
 import io.github.kcajpanda.simpledialogue.ClickSide;
 import io.github.kcajpanda.simpledialogue.SimpleDialoguePlugin;
 import io.github.kcajpanda.simpledialogue.dialogue.Dialogue;
+import io.github.kcajpanda.simpledialogue.dialogue.DialogueManager.ValidationIssue;
+import io.github.kcajpanda.simpledialogue.dialogue.DialogueManager.Severity;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Bukkit;
@@ -47,6 +49,7 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
             case "new" -> create(sender, args);
             case "reset" -> reset(sender, args);
             case "info" -> info(sender, args);
+            case "validate" -> validate(sender, args);
             default -> help(sender);
         }
 
@@ -56,9 +59,9 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return List.of("reload", "click", "npcname", "link", "line", "new", "reset", "info");
+            return List.of("reload", "click", "npcname", "link", "line", "new", "reset", "info", "validate");
         }
-        if (args.length == 2 && List.of("click", "npcname", "link", "line", "info").contains(args[0].toLowerCase())) {
+        if (args.length == 2 && List.of("click", "npcname", "link", "line", "info", "validate").contains(args[0].toLowerCase())) {
             return new ArrayList<>(plugin.dialogueManager().dialogueIds());
         }
         if (args.length == 3 && args[0].equalsIgnoreCase("click")) {
@@ -206,6 +209,28 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
         sender.sendMessage("Nodes: " + String.join(", ", dialogue.nodes().keySet()));
     }
 
+    private void validate(CommandSender sender, String[] args) {
+        if (!requireAdmin(sender)) {
+            return;
+        }
+
+        List<ValidationIssue> issues = args.length >= 2
+            ? plugin.dialogueManager().validate(args[1])
+            : plugin.dialogueManager().validateAll();
+
+        if (issues.isEmpty()) {
+            sender.sendMessage("SimpleDialogue validation passed.");
+            return;
+        }
+
+        long errors = issues.stream().filter(issue -> issue.severity() == Severity.ERROR).count();
+        long warnings = issues.size() - errors;
+        sender.sendMessage("SimpleDialogue validation found " + errors + " error(s) and " + warnings + " warning(s):");
+        for (ValidationIssue issue : issues) {
+            sender.sendMessage("[" + issue.severity() + "] " + issue.message());
+        }
+    }
+
     private void help(CommandSender sender) {
         sender.sendMessage("/sd click <dialogue> <left|right> [player]");
         sender.sendMessage("/sd new <dialogue> <npc-name> [name-color]");
@@ -214,6 +239,7 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
         sender.sendMessage("/sd line add <dialogue> <node> <text...>");
         sender.sendMessage("/sd reset [player]");
         sender.sendMessage("/sd info <dialogue>");
+        sender.sendMessage("/sd validate [dialogue]");
         sender.sendMessage("/sd reload");
     }
 

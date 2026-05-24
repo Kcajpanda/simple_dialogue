@@ -14,6 +14,7 @@ Use this before publishing the beta release or Hangar version.
 
 - `plugins/SimpleDialogue/config.yml` exists
 - `plugins/SimpleDialogue/dialogues/guide.yml` exists
+- `plugins/SimpleDialogue/dialogues/merchant.yml` exists on new installs
 - `/plugins` shows `SimpleDialogue`
 
 ## Commands
@@ -24,6 +25,8 @@ Use this before publishing the beta release or Hangar version.
 - `/sd new blacksmith Blacksmith gold` creates `blacksmith.yml`
 - `/sd link blacksmith blacksmith` prints the FancyNpcs action commands
 - `/sd line add blacksmith 1 Need something forged?` appends a line
+- `/sd validate` reports no errors for the bundled sample dialogues
+- `/sd validate guide` reports no errors for only the guide dialogue
 
 ## FancyNpcs Integration
 

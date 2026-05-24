@@ -22,6 +22,7 @@ public final class SimpleDialoguePlugin extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig();
         saveBundledDialogue("guide.yml");
+        saveBundledDialogue("merchant.yml");
 
         sessions = new PlayerDialogueSessions();
         dialogueManager = new DialogueManager(this);
