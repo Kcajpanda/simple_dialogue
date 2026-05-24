@@ -189,6 +189,77 @@ public final class DialogueManager {
         return true;
     }
 
+    public boolean upsertNode(String dialogueId, String nodeId, String speaker, List<String> lines) {
+        File file = dialogueFile(dialogueId);
+        if (!file.exists()) {
+            return false;
+        }
+
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+        ConfigurationSection nodeSection = nodeSection(yaml, nodeId);
+        if (nodeSection == null) {
+            nodeSection = yaml.createSection("nodes." + nodeId);
+        }
+        nodeSection.set("speaker", speaker);
+        if (!lines.isEmpty()) {
+            nodeSection.set("lines", lines);
+        } else if (!nodeSection.isList("lines")) {
+            nodeSection.set("lines", List.of());
+        }
+        save(yaml, file);
+        reload();
+        return true;
+    }
+
+    public boolean setBranch(String dialogueId, String nodeId, ClickSide side, String target, String choiceText) {
+        File file = dialogueFile(dialogueId);
+        if (!file.exists()) {
+            return false;
+        }
+
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+        ConfigurationSection nodeSection = nodeSection(yaml, nodeId);
+        if (nodeSection == null) {
+            nodeSection = yaml.createSection("nodes." + nodeId);
+            nodeSection.set("speaker", "npc");
+            nodeSection.set("lines", List.of());
+        }
+
+        String branchKey = side == ClickSide.LEFT ? "left" : "right";
+        String textKey = side == ClickSide.LEFT ? "left-text" : "right-text";
+        if ("clear".equalsIgnoreCase(target) || "none".equalsIgnoreCase(target)) {
+            nodeSection.set(branchKey, null);
+            nodeSection.set(textKey, null);
+        } else {
+            nodeSection.set(branchKey, target);
+            if (choiceText != null && !choiceText.isBlank()) {
+                nodeSection.set(textKey, choiceText);
+            }
+        }
+        save(yaml, file);
+        reload();
+        return true;
+    }
+
+    public boolean setNodeEnd(String dialogueId, String nodeId, boolean end) {
+        File file = dialogueFile(dialogueId);
+        if (!file.exists()) {
+            return false;
+        }
+
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+        ConfigurationSection nodeSection = nodeSection(yaml, nodeId);
+        if (nodeSection == null) {
+            nodeSection = yaml.createSection("nodes." + nodeId);
+            nodeSection.set("speaker", "npc");
+            nodeSection.set("lines", List.of());
+        }
+        nodeSection.set("end", end);
+        save(yaml, file);
+        reload();
+        return true;
+    }
+
     public void createDialogue(String dialogueId, String npcName, String nameColor) {
         File file = dialogueFile(dialogueId);
         if (file.exists()) {

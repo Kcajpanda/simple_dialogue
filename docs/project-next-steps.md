@@ -65,4 +65,4 @@ They are not a user guide, a tutorial, or a real wiki. For Simple Dialogue, the 
 - Hangar description for discovery
 - Javadocs only as a developer reference
 
-A GitHub Wiki is optional. For now, repo docs are better because they are versioned with the code and show up naturally in pull requests.
+A GitHub Wiki is now useful as the public server-owner guide. Keep the source copy in `docs/wiki/` so changes are versioned with the code, then mirror those pages into the GitHub Wiki when publishing.

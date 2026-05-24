@@ -46,6 +46,8 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
             case "npcname" -> npcName(sender, args);
             case "link" -> link(sender, args);
             case "line" -> line(sender, args);
+            case "node" -> node(sender, args);
+            case "branch" -> branch(sender, args);
             case "new" -> create(sender, args);
             case "reset" -> reset(sender, args);
             case "info" -> info(sender, args);
@@ -59,13 +61,28 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return List.of("reload", "click", "npcname", "link", "line", "new", "reset", "info", "validate");
+            return List.of("reload", "click", "npcname", "link", "line", "node", "branch", "new", "reset", "info", "validate");
         }
-        if (args.length == 2 && List.of("click", "npcname", "link", "line", "info", "validate").contains(args[0].toLowerCase())) {
+        if (args.length == 2 && args[0].equalsIgnoreCase("line")) {
+            return List.of("add");
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("node")) {
+            return List.of("add", "end");
+        }
+        if (
+            (args.length == 2 && List.of("click", "npcname", "link", "branch", "info", "validate").contains(args[0].toLowerCase()))
+                || (args.length == 3 && List.of("line", "node").contains(args[0].toLowerCase()))
+        ) {
             return new ArrayList<>(plugin.dialogueManager().dialogueIds());
         }
         if (args.length == 3 && args[0].equalsIgnoreCase("click")) {
             return List.of("left", "right");
+        }
+        if (args.length == 4 && args[0].equalsIgnoreCase("branch")) {
+            return List.of("left", "right");
+        }
+        if (args.length == 5 && args[0].equalsIgnoreCase("node") && args[1].equalsIgnoreCase("add")) {
+            return List.of("npc", "player");
         }
         return List.of();
     }
@@ -154,6 +171,91 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
         }
     }
 
+    private void node(CommandSender sender, String[] args) {
+        if (!requireAdmin(sender)) {
+            return;
+        }
+        if (args.length < 4) {
+            sender.sendMessage("Usage: /sd node add <dialogue> <node> [npc|player] [text...]");
+            sender.sendMessage("Usage: /sd node end <dialogue> <node> <true|false>");
+            return;
+        }
+
+        switch (args[1].toLowerCase()) {
+            case "add" -> nodeAdd(sender, args);
+            case "end" -> nodeEnd(sender, args);
+            default -> {
+                sender.sendMessage("Usage: /sd node add <dialogue> <node> [npc|player] [text...]");
+                sender.sendMessage("Usage: /sd node end <dialogue> <node> <true|false>");
+            }
+        }
+    }
+
+    private void nodeAdd(CommandSender sender, String[] args) {
+        if (args.length < 4) {
+            sender.sendMessage("Usage: /sd node add <dialogue> <node> [npc|player] [text...]");
+            return;
+        }
+
+        String speaker = "npc";
+        int textStart = 4;
+        if (args.length >= 5 && List.of("npc", "player").contains(args[4].toLowerCase())) {
+            speaker = args[4].toLowerCase();
+            textStart = 5;
+        }
+
+        List<String> lines = args.length > textStart
+            ? List.of(String.join(" ", List.of(args).subList(textStart, args.length)))
+            : List.of();
+
+        if (plugin.dialogueManager().upsertNode(args[2], args[3], speaker, lines)) {
+            sender.sendMessage("Saved node " + args[3] + " in " + args[2] + ".");
+        } else {
+            sender.sendMessage("Unknown dialogue: " + args[2]);
+        }
+    }
+
+    private void nodeEnd(CommandSender sender, String[] args) {
+        if (args.length < 5) {
+            sender.sendMessage("Usage: /sd node end <dialogue> <node> <true|false>");
+            return;
+        }
+
+        if (!List.of("true", "false").contains(args[4].toLowerCase())) {
+            sender.sendMessage("End value must be true or false.");
+            return;
+        }
+
+        if (plugin.dialogueManager().setNodeEnd(args[2], args[3], Boolean.parseBoolean(args[4]))) {
+            sender.sendMessage("Set end=" + args[4].toLowerCase() + " for " + args[2] + " node " + args[3] + ".");
+        } else {
+            sender.sendMessage("Unknown dialogue: " + args[2]);
+        }
+    }
+
+    private void branch(CommandSender sender, String[] args) {
+        if (!requireAdmin(sender)) {
+            return;
+        }
+        if (args.length < 5) {
+            sender.sendMessage("Usage: /sd branch <dialogue> <node> <left|right> <target|clear> [choice text...]");
+            return;
+        }
+
+        ClickSide side = ClickSide.parse(args[3]);
+        if (side == null) {
+            sender.sendMessage("Branch side must be left or right.");
+            return;
+        }
+
+        String choiceText = args.length >= 6 ? String.join(" ", List.of(args).subList(5, args.length)) : "";
+        if (plugin.dialogueManager().setBranch(args[1], args[2], side, args[4], choiceText)) {
+            sender.sendMessage("Set " + args[3].toLowerCase() + " branch on " + args[1] + " node " + args[2] + ".");
+        } else {
+            sender.sendMessage("Unknown dialogue: " + args[1]);
+        }
+    }
+
     private void create(CommandSender sender, String[] args) {
         if (!requireAdmin(sender)) {
             return;
@@ -237,6 +339,9 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
         sender.sendMessage("/sd npcname <dialogue> <name> <name-color> [bracket-color]");
         sender.sendMessage("/sd link <dialogue> <fancy-npc>");
         sender.sendMessage("/sd line add <dialogue> <node> <text...>");
+        sender.sendMessage("/sd node add <dialogue> <node> [npc|player] [text...]");
+        sender.sendMessage("/sd node end <dialogue> <node> <true|false>");
+        sender.sendMessage("/sd branch <dialogue> <node> <left|right> <target|clear> [choice text...]");
         sender.sendMessage("/sd reset [player]");
         sender.sendMessage("/sd info <dialogue>");
         sender.sendMessage("/sd validate [dialogue]");

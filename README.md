@@ -2,7 +2,7 @@
 
 Simple Dialogue is a small Paper plugin for left/right NPC dialogue trees. It was built to pair with FancyNpcs: add one custom FancyNpcs action to an NPC, then players can left-click or right-click through a YAML-backed conversation.
 
-This is early beta software. It is usable for testing and small servers, but the command set and file format may still change before a stable release.
+This project is moving toward a stable release. Server owners should still run the release checklist on their exact Paper/FancyNpcs versions before upgrading a live server.
 
 ## Features
 
@@ -14,7 +14,7 @@ This is early beta software. It is usable for testing and small servers, but the
 - Configurable NPC/player chat prefixes
 - Custom FancyNpcs action: `simple_dialogue`
 - Command fallback for servers that prefer console-command NPC actions
-- Basic in-game commands for creating, linking, and adding lines
+- In-game commands for creating dialogues, adding nodes, wiring branches, and marking endings
 - `/sd validate` for checking dialogue tree mistakes
 
 ## Requirements
@@ -139,6 +139,9 @@ See [docs/dialogues.md](docs/dialogues.md) for authoring tips and file-format de
 /sd npcname <dialogue> <name> <name-color> [bracket-color]
 /sd link <dialogue> <fancy-npc>
 /sd line add <dialogue> <node> <text...>
+/sd node add <dialogue> <node> [npc|player] [text...]
+/sd node end <dialogue> <node> <true|false>
+/sd branch <dialogue> <node> <left|right> <target|clear> [choice text...]
 /sd click <dialogue> <left|right> [player]
 /sd reset [player]
 /sd info <dialogue>
@@ -174,21 +177,39 @@ Dialogue lines themselves also support MiniMessage formatting.
 
 ## Building Dialogue Trees
 
-For real dialogue trees, edit the YAML files directly. The in-game commands are useful for quick drafts, linking an NPC, and adding a line while testing, but YAML is the better source of truth for branching because you can see the whole tree at once.
+For real dialogue trees, YAML is still the easiest source of truth because you can see the whole tree at once. The server commands can now create and wire a full tree when you want to draft in-game or avoid file access.
 
 Recommended workflow:
 
 1. Use `/sd new <id> <npc-name>` to create the starter file.
 2. Use `/sd link <id> <fancy-npc>` to print the FancyNpcs action commands.
-3. Edit the YAML file for branches, endings, and MiniMessage styling.
-4. Run `/sd reload`.
-5. Test the NPC in-game.
+3. Add nodes with `/sd node add <id> <node> [npc|player] [text...]`.
+4. Wire choices with `/sd branch <id> <node> <left|right> <target> [choice text...]`.
+5. Mark endings with `/sd node end <id> <node> true`.
+6. Run `/sd validate`.
+7. Test the NPC in-game.
+
+Example command-built tree:
+
+```text
+/sd new blacksmith Blacksmith gold
+/sd node add blacksmith 1 npc Need something forged?
+/sd branch blacksmith 1 left 1.1 Leave
+/sd branch blacksmith 1 right 1.2 Ask for work
+/sd node add blacksmith 1.1 npc Then keep your blade sharp.
+/sd node end blacksmith 1.1 true
+/sd node add blacksmith 1.2 npc Bring me iron and coal.
+/sd node end blacksmith 1.2 true
+/sd validate blacksmith
+```
 
 ## Release And Publishing Notes
 
 - Hangar page copy: [docs/hangar.md](docs/hangar.md)
 - Publishing and outreach notes: [docs/project-next-steps.md](docs/project-next-steps.md)
 - Server test checklist: [docs/testing-checklist.md](docs/testing-checklist.md)
+- Stable release readiness: [docs/release-readiness.md](docs/release-readiness.md)
+- GitHub Wiki draft pages: [docs/wiki/Home.md](docs/wiki/Home.md)
 - Updated sample guide dialogue: [docs/examples/guide.yml](docs/examples/guide.yml)
 - Example merchant dialogue: [docs/examples/merchant.yml](docs/examples/merchant.yml)
 - Draft `v0.1.2` release notes: [docs/release-v0.1.2.md](docs/release-v0.1.2.md)

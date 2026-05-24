@@ -25,8 +25,25 @@ Use this before publishing the beta release or Hangar version.
 - `/sd new blacksmith Blacksmith gold` creates `blacksmith.yml`
 - `/sd link blacksmith blacksmith` prints the FancyNpcs action commands
 - `/sd line add blacksmith 1 Need something forged?` appends a line
+- `/sd node add blacksmith 1.1 npc Bring me iron and coal.` creates a branch node
+- `/sd branch blacksmith 1 right 1.1 Ask for work` wires a branch and choice prompt
+- `/sd node end blacksmith 1.1 true` marks the node as an ending
 - `/sd validate` reports no errors for the bundled sample dialogues
 - `/sd validate guide` reports no errors for only the guide dialogue
+
+## Backwards Compatibility
+
+- Upgrade a server with an existing `plugins/SimpleDialogue/dialogues/guide.yml`
+- Confirm startup does not overwrite the existing dialogue file
+- Confirm older flat node ids such as `"1.1"` still load
+- Confirm nested node sections still load
+- Confirm existing FancyNpcs `simple_dialogue` actions still advance left/right branches
+- Confirm existing console-command fallbacks still work:
+
+```text
+/npc action guide LEFT_CLICK add console_command sd click guide left {player}
+/npc action guide RIGHT_CLICK add console_command sd click guide right {player}
+```
 
 ## FancyNpcs Integration
 

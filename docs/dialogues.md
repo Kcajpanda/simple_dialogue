@@ -17,6 +17,9 @@ Commands are good for:
 - Creating a starter file
 - Linking a dialogue id to a FancyNpcs NPC name
 - Adding quick test lines while standing in-game
+- Creating nodes
+- Wiring left/right branch targets
+- Marking ending nodes
 - Reloading after edits
 
 YAML is better for:
@@ -69,6 +72,18 @@ nodes:
     lines:
       - "Then keep your blade sharp."
     end: true
+```
+
+The same tree can be drafted with commands:
+
+```text
+/sd node add blacksmith 1 npc Need something forged?
+/sd branch blacksmith 1 left 1.2 Leave
+/sd branch blacksmith 1 right 1.1 Ask for work
+/sd node add blacksmith 1.1 npc Bring me iron and coal.
+/sd node end blacksmith 1.1 true
+/sd node add blacksmith 1.2 npc Then keep your blade sharp.
+/sd node end blacksmith 1.2 true
 ```
 
 ## Node Fields
