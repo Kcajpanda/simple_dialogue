@@ -20,7 +20,7 @@ This is a beta release intended for testing, small servers, and feedback before 
 - RPG-style choice prompts with `left-text` and `right-text`
 - Sample dialogue included on first startup
 - Extra merchant example dialogue included for testing
-- Admin commands for creating dialogues, adding nodes, wiring branches, and marking endings
+- Admin commands for creating dialogues, adding nodes, auto-advancing intros, wiring branches, and marking endings
 - `/sd validate` command for checking dialogue tree mistakes
 
 ## Requirements
@@ -59,7 +59,7 @@ The last argument is the dialogue id from the YAML file, such as `guide` for `pl
 
 ## Version Channel Text
 
-`v0.1.3` adds server commands for building full dialogue trees in-game: create/update nodes, wire left/right branches with choice text, clear branches, and mark ending nodes. It also corrects plugin metadata and adds release-readiness/wiki docs.
+`v0.1.3` adds server commands for building full dialogue trees in-game: create/update nodes, auto-advance intro nodes, wire left/right branches with choice text, clear branches, and mark ending nodes. It also corrects plugin metadata and adds release-readiness/wiki docs.
 
 ## Manual Version Checklist
 

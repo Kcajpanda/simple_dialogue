@@ -76,8 +76,9 @@ The final `guide` is the dialogue id from `plugins/SimpleDialogue/dialogues/guid
 Join the server and right-click the NPC once. You should see the sample dialogue:
 
 ```text
-<Guide> Road's closed until morning.
-<Left> Say goodbye | <Right> Ask why
+<Guide> Hello, I'm the guide.
+<Guide> How can I help?
+<Left> Ask what this place is | <Right> Ask what you can do here
 ```
 
 Right-click again to follow the right branch, or left-click to follow the left branch.
@@ -108,25 +109,41 @@ npc:
   name: Guide
   name-color: green
   bracket-color: gray
-start: "1"
+start: "Intro"
 nodes:
-  "1":
+  "Intro":
     speaker: npc
     lines:
-      - "Road's closed until morning."
-    left-text: "Say goodbye"
-    right-text: "Ask why"
-    right: "1.1"
-    left: "1.2"
-  "1.1":
+      - "Hello, I'm the guide."
+    next: "Help"
+  "Help":
     speaker: npc
     lines:
-      - "Bandits near the bridge."
-    end: true
-  "1.2":
+      - "How can I help?"
+    left-text: "Ask what this place is"
+    right-text: "Ask what you can do here"
+    left: "What"
+    right: "Do"
+  "What":
     speaker: npc
     lines:
-      - "Safe travels."
+      - "This is an outside place, a dimension beyond space and time."
+    left-text: "Leave"
+    right-text: "Ask more questions"
+    left: "Leave"
+    right: "Help"
+  "Do":
+    speaker: npc
+    lines:
+      - "You can explore survival, minigames, or creative worlds from here."
+    left-text: "Leave"
+    right-text: "Ask more questions"
+    left: "Leave"
+    right: "Help"
+  "Leave":
+    speaker: npc
+    lines:
+      - "I'll be right here if you have any more questions."
     end: true
 ```
 
@@ -141,6 +158,7 @@ See [docs/dialogues.md](docs/dialogues.md) for authoring tips and file-format de
 /sd line add <dialogue> <node> <text...>
 /sd node add <dialogue> <node> [npc|player] [text...]
 /sd node end <dialogue> <node> <true|false>
+/sd node next <dialogue> <node> <target|clear>
 /sd branch <dialogue> <node> <left|right> <target|clear> [choice text...]
 /sd click <dialogue> <left|right> [player]
 /sd reset [player]
@@ -203,17 +221,36 @@ Example command-built tree:
 /sd validate blacksmith
 ```
 
+For a one-time intro before the choice tree, make the intro the start node and auto-advance it with `next`:
+
+```yaml
+start: "Intro"
+nodes:
+  "Intro":
+    speaker: npc
+    lines:
+      - "Hello, I'm the guide."
+    next: "Help"
+  "Help":
+    speaker: npc
+    lines:
+      - "How can I help?"
+    left-text: "Leave"
+    left: "Leave"
+```
+
+`next` sends the target node immediately after the current node. It is best for intros, short cutscenes, and player/NPC line exchanges that should not require another click.
+
 ## Release And Publishing Notes
 
 - Hangar page copy: [docs/hangar.md](docs/hangar.md)
-- Publishing and outreach notes: [docs/project-next-steps.md](docs/project-next-steps.md)
+- Modrinth page copy: [docs/modrinth.md](docs/modrinth.md)
 - Server test checklist: [docs/testing-checklist.md](docs/testing-checklist.md)
 - Stable release readiness: [docs/release-readiness.md](docs/release-readiness.md)
 - GitHub Wiki draft pages: [docs/wiki/Home.md](docs/wiki/Home.md)
 - Updated sample guide dialogue: [docs/examples/guide.yml](docs/examples/guide.yml)
 - Example merchant dialogue: [docs/examples/merchant.yml](docs/examples/merchant.yml)
 - Draft `v0.1.3` release notes: [docs/release-v0.1.3.md](docs/release-v0.1.3.md)
-- Previous `v0.1.2` release notes: [docs/release-v0.1.2.md](docs/release-v0.1.2.md)
 
 ## Javadocs
 

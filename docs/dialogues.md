@@ -20,6 +20,7 @@ Commands are good for:
 - Creating nodes
 - Wiring left/right branch targets
 - Marking ending nodes
+- Setting one-way `next` transitions for intros or automatic line exchanges
 - Reloading after edits
 
 YAML is better for:
@@ -94,9 +95,34 @@ The same tree can be drafted with commands:
 - `right`: node id reached by a right-click
 - `left-text`: choice text shown for the left-click option
 - `right-text`: choice text shown for the right-click option
+- `next`: node id reached automatically after this node is sent
 - `end`: clears the player's active dialogue session after the node is sent
 
 If a clicked branch is missing or blank, the conversation ends silently.
+
+## Intro Nodes
+
+Use `next` when a line should play once at the start, then immediately enter a normal choice node.
+
+```yaml
+start: "Intro"
+nodes:
+  "Intro":
+    speaker: npc
+    lines:
+      - "Hello, I'm the guide."
+    next: "Help"
+  "Help":
+    speaker: npc
+    lines:
+      - "How can I help?"
+    left-text: "Leave"
+    right-text: "Ask what you can do here"
+    left: "Leave"
+    right: "Do"
+```
+
+`next` does not wait for another click. Avoid putting `left` or `right` branches on the same node; validation warns because those branches are skipped by the automatic transition.
 
 ## Choice Prompts
 

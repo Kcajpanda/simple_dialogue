@@ -129,13 +129,7 @@ public final class DialogueManager {
             return false;
         }
 
-        sendNode(player, dialogue, nextNode);
-        if (nextNode.end()) {
-            plugin.sessions().clear(player.getUniqueId());
-        } else {
-            plugin.sessions().setNode(player.getUniqueId(), dialogue.id(), nextNode.id());
-        }
-        return true;
+        return enterNode(player, dialogue, nextNode);
     }
 
     public boolean setNpcProfile(String dialogueId, String npcName, String nameColor, String bracketColor) {
@@ -260,6 +254,25 @@ public final class DialogueManager {
         return true;
     }
 
+    public boolean setNodeNext(String dialogueId, String nodeId, String target) {
+        File file = dialogueFile(dialogueId);
+        if (!file.exists()) {
+            return false;
+        }
+
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+        ConfigurationSection nodeSection = nodeSection(yaml, nodeId);
+        if (nodeSection == null) {
+            nodeSection = yaml.createSection("nodes." + nodeId);
+            nodeSection.set("speaker", "npc");
+            nodeSection.set("lines", List.of());
+        }
+        nodeSection.set("next", ("clear".equalsIgnoreCase(target) || "none".equalsIgnoreCase(target)) ? null : target);
+        save(yaml, file);
+        reload();
+        return true;
+    }
+
     public void createDialogue(String dialogueId, String npcName, String nameColor) {
         File file = dialogueFile(dialogueId);
         if (file.exists()) {
@@ -295,13 +308,37 @@ public final class DialogueManager {
             return false;
         }
 
-        sendNode(player, dialogue, startNode);
-        if (startNode.end()) {
-            plugin.sessions().clear(player.getUniqueId());
-        } else {
-            plugin.sessions().setNode(player.getUniqueId(), dialogue.id(), startNode.id());
+        return enterNode(player, dialogue, startNode);
+    }
+
+    private boolean enterNode(Player player, Dialogue dialogue, Dialogue.DialogueNode node) {
+        Dialogue.DialogueNode current = node;
+        for (int depth = 0; depth < dialogue.nodes().size(); depth++) {
+            sendNode(player, dialogue, current);
+            if (current.end()) {
+                plugin.sessions().clear(player.getUniqueId());
+                return true;
+            }
+
+            String next = current.next();
+            if (!hasBranch(next)) {
+                plugin.sessions().setNode(player.getUniqueId(), dialogue.id(), current.id());
+                return true;
+            }
+
+            Dialogue.DialogueNode nextNode = dialogue.nodes().get(next);
+            if (nextNode == null) {
+                player.sendMessage(Component.text("Dialogue " + dialogue.id() + " is missing node " + next + "."));
+                plugin.sessions().clear(player.getUniqueId());
+                return false;
+            }
+
+            current = nextNode;
         }
-        return true;
+
+        player.sendMessage(Component.text("Dialogue " + dialogue.id() + " has a next loop."));
+        plugin.sessions().clear(player.getUniqueId());
+        return false;
     }
 
     private Component prefix(Dialogue dialogue, String speaker, Player player) {
@@ -448,6 +485,7 @@ public final class DialogueManager {
                     nodeSection.getString("right"),
                     nodeSection.getString("left-text", ""),
                     nodeSection.getString("right-text", ""),
+                    nodeSection.getString("next"),
                     nodeSection.getBoolean("end", false)
                 ));
             }
@@ -468,12 +506,13 @@ public final class DialogueManager {
             || section.isString("right")
             || section.isString("left-text")
             || section.isString("right-text")
+            || section.isString("next")
             || section.isBoolean("end");
     }
 
     private boolean isNodeField(String key) {
         return switch (key) {
-            case "speaker", "lines", "left", "right", "left-text", "right-text", "end" -> true;
+            case "speaker", "lines", "left", "right", "left-text", "right-text", "next", "end" -> true;
             default -> false;
         };
     }
@@ -509,8 +548,22 @@ public final class DialogueManager {
         }
         validateBranch(dialogue, node.id(), "left", node.left(), node.leftText(), issues);
         validateBranch(dialogue, node.id(), "right", node.right(), node.rightText(), issues);
-        if (node.end() && (hasBranch(node.left()) || hasBranch(node.right()))) {
-            issues.add(ValidationIssue.warning(prefix + "is marked end:true but also has branch targets."));
+        validateNext(dialogue, node, issues);
+        if (node.end() && (hasBranch(node.left()) || hasBranch(node.right()) || hasBranch(node.next()))) {
+            issues.add(ValidationIssue.warning(prefix + "is marked end:true but also has branch/next targets."));
+        }
+    }
+
+    private void validateNext(Dialogue dialogue, Dialogue.DialogueNode node, List<ValidationIssue> issues) {
+        if (!hasBranch(node.next())) {
+            return;
+        }
+        String prefix = dialogue.id() + " node " + node.id() + " next: ";
+        if (!dialogue.nodes().containsKey(node.next())) {
+            issues.add(ValidationIssue.error(prefix + "target '" + node.next() + "' does not exist."));
+        }
+        if (hasBranch(node.left()) || hasBranch(node.right())) {
+            issues.add(ValidationIssue.warning(prefix + "auto-advances, so left/right branches on this node are ignored."));
         }
     }
 

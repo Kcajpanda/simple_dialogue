@@ -6,6 +6,7 @@ Simple Dialogue `v0.1.3` is the command-authoring beta. It adds the missing serv
 
 - Added `/sd node add <dialogue> <node> [npc|player] [text...]`.
 - Added `/sd node end <dialogue> <node> <true|false>`.
+- Added `/sd node next <dialogue> <node> <target|clear>` for intro nodes and automatic line flow.
 - Added `/sd branch <dialogue> <node> <left|right> <target|clear> [choice text...]`.
 - Improved tab completion for the new nested command syntax.
 - Corrected `plugin.yml` `api-version` to `1.21`.
@@ -18,6 +19,8 @@ Simple Dialogue `v0.1.3` is the command-authoring beta. It adds the missing serv
 
 ```text
 /sd new blacksmith Blacksmith gold
+/sd node add blacksmith Intro npc Hello, I'm the blacksmith.
+/sd node next blacksmith Intro 1
 /sd node add blacksmith 1 npc Need something forged?
 /sd branch blacksmith 1 left 1.1 Leave
 /sd branch blacksmith 1 right 1.2 Ask for work

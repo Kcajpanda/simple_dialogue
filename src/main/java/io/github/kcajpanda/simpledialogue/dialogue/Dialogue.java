@@ -27,6 +27,7 @@ public record Dialogue(
         String right,
         String leftText,
         String rightText,
+        String next,
         boolean end
     ) {
     }

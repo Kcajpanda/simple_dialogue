@@ -30,6 +30,7 @@ Server owners can build trees directly with `/sd` commands or edit YAML files fo
 `v0.1.3` adds server commands for building complete dialogue trees in-game:
 
 - Create or update nodes with `/sd node add`
+- Auto-advance intro nodes with `/sd node next`
 - Mark endings with `/sd node end`
 - Wire left/right branches with `/sd branch`
 - Clear branches with `/sd branch <dialogue> <node> <left|right> clear`

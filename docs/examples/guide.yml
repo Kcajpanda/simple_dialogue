@@ -4,36 +4,47 @@ npc:
   name: Guide
   name-color: green
   bracket-color: gray
-start: "1"
+start: "Intro"
 nodes:
-  "1":
+  "Intro":
     speaker: npc
     lines:
-      - "Road's closed until morning."
-    left-text: "Say goodbye"
-    right-text: "Ask why"
-    right: "1.1"
-    left: "1.2"
-  "1.1":
+      - "Hello, I'm the guide."
+    next: "Help"
+  "Help":
     speaker: npc
     lines:
-      - "Bandits near the bridge."
-    left-text: "Back away"
-    right-text: "Offer help"
-    right: "1.1.1"
-    left: "1.1.2"
-  "1.2":
+      - "How can I help?"
+    left-text: "Ask what this place is"
+    right-text: "Ask what you can do here"
+    left: "What"
+    right: "Do"
+  "What":
     speaker: npc
     lines:
-      - "Safe travels."
-    end: true
-  "1.1.1":
+      - "This is an outside place, a dimension beyond space and time that's quite empty, except where things intersect. That's probably the easiest way to say it."
+    left-text: "Leave"
+    right-text: "Ask how he got here"
+    left: "Leave"
+    right: "Got-Here"
+  "Got-Here":
     speaker: npc
     lines:
-      - "Brave. Bring me a bandit banner and I'll open the gate."
-    end: true
-  "1.1.2":
+      - "That's a story for another time. Wander for long enough and you'll eventually wind up here."
+    left-text: "Leave"
+    right-text: "Ask more questions"
+    left: "Leave"
+    right: "Help"
+  "Do":
     speaker: npc
     lines:
-      - "Wise choice. Keep your head down."
+      - "There's a lot to do here. Survival is straight ahead, minigames are to my right, and creative is to my left. You can join any world by right-clicking the corresponding person. Anything else?"
+    left-text: "Leave"
+    right-text: "Ask more questions"
+    left: "Leave"
+    right: "Help"
+  "Leave":
+    speaker: npc
+    lines:
+      - "I'll be right here if you have any more questions."
     end: true

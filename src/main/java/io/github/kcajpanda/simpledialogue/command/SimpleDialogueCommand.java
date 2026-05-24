@@ -67,7 +67,7 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
             return List.of("add");
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("node")) {
-            return List.of("add", "end");
+            return List.of("add", "end", "next");
         }
         if (
             (args.length == 2 && List.of("click", "npcname", "link", "branch", "info", "validate").contains(args[0].toLowerCase()))
@@ -178,15 +178,18 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
         if (args.length < 4) {
             sender.sendMessage("Usage: /sd node add <dialogue> <node> [npc|player] [text...]");
             sender.sendMessage("Usage: /sd node end <dialogue> <node> <true|false>");
+            sender.sendMessage("Usage: /sd node next <dialogue> <node> <target|clear>");
             return;
         }
 
         switch (args[1].toLowerCase()) {
             case "add" -> nodeAdd(sender, args);
             case "end" -> nodeEnd(sender, args);
+            case "next" -> nodeNext(sender, args);
             default -> {
                 sender.sendMessage("Usage: /sd node add <dialogue> <node> [npc|player] [text...]");
                 sender.sendMessage("Usage: /sd node end <dialogue> <node> <true|false>");
+                sender.sendMessage("Usage: /sd node next <dialogue> <node> <target|clear>");
             }
         }
     }
@@ -228,6 +231,19 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
 
         if (plugin.dialogueManager().setNodeEnd(args[2], args[3], Boolean.parseBoolean(args[4]))) {
             sender.sendMessage("Set end=" + args[4].toLowerCase() + " for " + args[2] + " node " + args[3] + ".");
+        } else {
+            sender.sendMessage("Unknown dialogue: " + args[2]);
+        }
+    }
+
+    private void nodeNext(CommandSender sender, String[] args) {
+        if (args.length < 5) {
+            sender.sendMessage("Usage: /sd node next <dialogue> <node> <target|clear>");
+            return;
+        }
+
+        if (plugin.dialogueManager().setNodeNext(args[2], args[3], args[4])) {
+            sender.sendMessage("Set next target for " + args[2] + " node " + args[3] + ".");
         } else {
             sender.sendMessage("Unknown dialogue: " + args[2]);
         }
@@ -341,6 +357,7 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
         sender.sendMessage("/sd line add <dialogue> <node> <text...>");
         sender.sendMessage("/sd node add <dialogue> <node> [npc|player] [text...]");
         sender.sendMessage("/sd node end <dialogue> <node> <true|false>");
+        sender.sendMessage("/sd node next <dialogue> <node> <target|clear>");
         sender.sendMessage("/sd branch <dialogue> <node> <left|right> <target|clear> [choice text...]");
         sender.sendMessage("/sd reset [player]");
         sender.sendMessage("/sd info <dialogue>");

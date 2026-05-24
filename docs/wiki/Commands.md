@@ -9,6 +9,7 @@ Admin/editing commands require `simpledialogue.admin`, which defaults to server 
 /sd line add <dialogue> <node> <text...>
 /sd node add <dialogue> <node> [npc|player] [text...]
 /sd node end <dialogue> <node> <true|false>
+/sd node next <dialogue> <node> <target|clear>
 /sd branch <dialogue> <node> <left|right> <target|clear> [choice text...]
 /sd click <dialogue> <left|right> [player]
 /sd reset [player]
@@ -29,6 +30,13 @@ Admin/editing commands require `simpledialogue.admin`, which defaults to server 
 /sd node add blacksmith 1.2 npc Bring me iron and coal.
 /sd node end blacksmith 1.2 true
 /sd validate blacksmith
+```
+
+Add an intro that automatically enters the main node:
+
+```text
+/sd node add blacksmith Intro npc Hello, I'm the blacksmith.
+/sd node next blacksmith Intro 1
 ```
 
 Use `clear` as the branch target to remove a branch:

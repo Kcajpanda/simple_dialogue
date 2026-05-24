@@ -15,26 +15,54 @@ npc:
   name: Guide
   name-color: green
   bracket-color: gray
-start: "1"
+start: "Intro"
 nodes:
-  "1":
+  "Intro":
     speaker: npc
     lines:
-      - "Road's closed until morning."
-    left-text: "Say goodbye"
-    right-text: "Ask why"
-    left: "1.2"
-    right: "1.1"
-  "1.1":
+      - "Hello, I'm the guide."
+    next: "Help"
+  "Help":
     speaker: npc
     lines:
-      - "Bandits near the bridge."
+      - "How can I help?"
+    left-text: "Leave"
+    right-text: "Ask what you can do here"
+    left: "Leave"
+    right: "Do"
+  "Do":
+    speaker: npc
+    lines:
+      - "You can explore survival, minigames, or creative worlds from here."
+    left-text: "Leave"
+    right-text: "Ask more questions"
+    left: "Leave"
+    right: "Help"
+  "Leave":
+    speaker: npc
+    lines:
+      - "I'll be right here if you have any more questions."
     end: true
-  "1.2":
+```
+
+## Intro Nodes
+
+Use `next` when a node should auto-advance into another node without waiting for another click.
+
+```yaml
+start: "Intro"
+nodes:
+  "Intro":
     speaker: npc
     lines:
-      - "Safe travels."
-    end: true
+      - "Hello, I'm the guide."
+    next: "Help"
+  "Help":
+    speaker: npc
+    lines:
+      - "How can I help?"
+    left-text: "Leave"
+    left: "Leave"
 ```
 
 ## Node Fields
@@ -45,6 +73,7 @@ nodes:
 - `right`: node id reached by a right-click
 - `left-text`: choice text shown for the left-click option
 - `right-text`: choice text shown for the right-click option
+- `next`: node id reached automatically after this node is sent
 - `end`: clears the player's active dialogue session after the node is sent
 
 Run `/sd validate` after editing YAML.
