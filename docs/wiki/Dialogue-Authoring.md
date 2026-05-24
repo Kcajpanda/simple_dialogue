@@ -74,6 +74,23 @@ nodes:
 - `left-text`: choice text shown for the left-click option
 - `right-text`: choice text shown for the right-click option
 - `next`: node id reached automatically after this node is sent
+- `commands`: console commands run when the node is reached
+- `player-commands`: commands run as the clicking player when the node is reached
 - `end`: clears the player's active dialogue session after the node is sent
+
+## Node Commands
+
+```yaml
+"Reward":
+  speaker: npc
+  lines:
+    - "Take this before you go."
+  commands:
+    - "give <player> minecraft:bread 4"
+    - "playsound minecraft:entity.experience_orb.pickup player <player>"
+  end: true
+```
+
+Available placeholders are `<player>`, `<uuid>`, `<dialogue>`, and `<node>`.
 
 Run `/sd validate` after editing YAML.

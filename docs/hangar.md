@@ -20,7 +20,7 @@ This is a beta release intended for testing, small servers, and feedback before 
 - RPG-style choice prompts with `left-text` and `right-text`
 - Sample dialogue included on first startup
 - Extra merchant example dialogue included for testing
-- Admin commands for creating dialogues, adding nodes, auto-advancing intros, wiring branches, and marking endings
+- Admin commands for creating dialogues, adding nodes, auto-advancing intros, wiring branches, running node commands, and marking endings
 - `/sd validate` command for checking dialogue tree mistakes
 
 ## Requirements
@@ -54,20 +54,20 @@ The last argument is the dialogue id from the YAML file, such as `guide` for `pl
 - Source: https://github.com/Kcajpanda/simple_dialogue
 - Issues: https://github.com/Kcajpanda/simple_dialogue/issues
 - Documentation: https://github.com/Kcajpanda/simple_dialogue#readme
-- Release: https://github.com/Kcajpanda/simple_dialogue/releases/tag/v0.1.3
+- Release: https://github.com/Kcajpanda/simple_dialogue/releases/tag/v0.1.4
 - License: MIT
 
 ## Version Channel Text
 
-`v0.1.3` adds server commands for building full dialogue trees in-game: create/update nodes, auto-advance intro nodes, wire left/right branches with choice text, clear branches, and mark ending nodes. It also corrects plugin metadata and adds release-readiness/wiki docs.
+`v0.1.4` adds node actions. Dialogue nodes can now run console commands or player commands when reached, which covers rewards, teleports, sounds via `playsound`, titles, scoreboard tags, and other plugin commands.
 
 ## Manual Version Checklist
 
-- Version name: `v0.1.3`
+- Version name: `v0.1.4`
 - Channel: `Beta` or `Release`
 - Platform: Paper
 - Platform versions: `26.1.2`
-- File: `simple-dialogue-0.1.3.jar`
-- External release URL: `https://github.com/Kcajpanda/simple_dialogue/releases/tag/v0.1.3`
+- File: `simple-dialogue-0.1.4.jar`
+- External release URL: `https://github.com/Kcajpanda/simple_dialogue/releases/tag/v0.1.4`
 - Dependency: FancyNpcs, required
 - Save/publish the version, then check the public `/versions` page while logged out or in a private window.

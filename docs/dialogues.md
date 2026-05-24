@@ -21,6 +21,7 @@ Commands are good for:
 - Wiring left/right branch targets
 - Marking ending nodes
 - Setting one-way `next` transitions for intros or automatic line exchanges
+- Adding console/player commands that run when a node is reached
 - Reloading after edits
 
 YAML is better for:
@@ -96,6 +97,8 @@ The same tree can be drafted with commands:
 - `left-text`: choice text shown for the left-click option
 - `right-text`: choice text shown for the right-click option
 - `next`: node id reached automatically after this node is sent
+- `commands`: console commands run when the node is reached
+- `player-commands`: commands run as the clicking player when the node is reached
 - `end`: clears the player's active dialogue session after the node is sent
 
 If a clicked branch is missing or blank, the conversation ends silently.
@@ -123,6 +126,40 @@ nodes:
 ```
 
 `next` does not wait for another click. Avoid putting `left` or `right` branches on the same node; validation warns because those branches are skipped by the automatic transition.
+
+## Node Commands
+
+Use `commands` for console actions such as rewards, teleports, titles, sounds, scoreboard tags, and integration commands from other plugins.
+
+```yaml
+"Reward":
+  speaker: npc
+  lines:
+    - "Take this before you go."
+  commands:
+    - "give <player> minecraft:bread 4"
+    - "playsound minecraft:entity.experience_orb.pickup player <player>"
+  end: true
+```
+
+Use `player-commands` only when the command should run with the player's permissions and context.
+
+```yaml
+"Thanks":
+  speaker: player
+  lines:
+    - "Thanks!"
+  player-commands:
+    - "me thanks the guide"
+  next: "Help"
+```
+
+Command placeholders:
+
+- `<player>`: the player's current name
+- `<uuid>`: the player's UUID
+- `<dialogue>`: the dialogue id
+- `<node>`: the node id
 
 ## Choice Prompts
 

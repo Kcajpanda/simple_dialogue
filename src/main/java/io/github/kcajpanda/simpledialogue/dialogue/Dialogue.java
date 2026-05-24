@@ -28,6 +28,8 @@ public record Dialogue(
         String leftText,
         String rightText,
         String next,
+        List<String> commands,
+        List<String> playerCommands,
         boolean end
     ) {
     }

@@ -3,6 +3,7 @@ package io.github.kcajpanda.simpledialogue.command;
 import io.github.kcajpanda.simpledialogue.ClickSide;
 import io.github.kcajpanda.simpledialogue.SimpleDialoguePlugin;
 import io.github.kcajpanda.simpledialogue.dialogue.Dialogue;
+import io.github.kcajpanda.simpledialogue.dialogue.DialogueManager.CommandMode;
 import io.github.kcajpanda.simpledialogue.dialogue.DialogueManager.ValidationIssue;
 import io.github.kcajpanda.simpledialogue.dialogue.DialogueManager.Severity;
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
             case "link" -> link(sender, args);
             case "line" -> line(sender, args);
             case "node" -> node(sender, args);
+            case "command" -> nodeCommand(sender, args);
             case "branch" -> branch(sender, args);
             case "new" -> create(sender, args);
             case "reset" -> reset(sender, args);
@@ -61,7 +63,7 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return List.of("reload", "click", "npcname", "link", "line", "node", "branch", "new", "reset", "info", "validate");
+            return List.of("reload", "click", "npcname", "link", "line", "node", "command", "branch", "new", "reset", "info", "validate");
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("line")) {
             return List.of("add");
@@ -74,6 +76,15 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
                 || (args.length == 3 && List.of("line", "node").contains(args[0].toLowerCase()))
         ) {
             return new ArrayList<>(plugin.dialogueManager().dialogueIds());
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("command")) {
+            return List.of("add", "clear");
+        }
+        if (args.length == 3 && args[0].equalsIgnoreCase("command")) {
+            return new ArrayList<>(plugin.dialogueManager().dialogueIds());
+        }
+        if (args.length == 5 && args[0].equalsIgnoreCase("command")) {
+            return List.of("console", "player");
         }
         if (args.length == 3 && args[0].equalsIgnoreCase("click")) {
             return List.of("left", "right");
@@ -272,6 +283,57 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
         }
     }
 
+    private void nodeCommand(CommandSender sender, String[] args) {
+        if (!requireAdmin(sender)) {
+            return;
+        }
+        if (args.length < 5) {
+            sender.sendMessage("Usage: /sd command add <dialogue> <node> <console|player> <command...>");
+            sender.sendMessage("Usage: /sd command clear <dialogue> <node> <console|player>");
+            return;
+        }
+
+        CommandMode mode = commandMode(args[4]);
+        if (mode == null) {
+            sender.sendMessage("Command mode must be console or player.");
+            return;
+        }
+
+        switch (args[1].toLowerCase()) {
+            case "add" -> {
+                if (args.length < 6) {
+                    sender.sendMessage("Usage: /sd command add <dialogue> <node> <console|player> <command...>");
+                    return;
+                }
+                String commandText = String.join(" ", List.of(args).subList(5, args.length));
+                if (plugin.dialogueManager().addNodeCommand(args[2], args[3], mode, commandText)) {
+                    sender.sendMessage("Added " + args[4].toLowerCase() + " command to " + args[2] + " node " + args[3] + ".");
+                } else {
+                    sender.sendMessage("Unknown dialogue or node: " + args[2] + " " + args[3]);
+                }
+            }
+            case "clear" -> {
+                if (plugin.dialogueManager().clearNodeCommands(args[2], args[3], mode)) {
+                    sender.sendMessage("Cleared " + args[4].toLowerCase() + " commands from " + args[2] + " node " + args[3] + ".");
+                } else {
+                    sender.sendMessage("Unknown dialogue or node: " + args[2] + " " + args[3]);
+                }
+            }
+            default -> {
+                sender.sendMessage("Usage: /sd command add <dialogue> <node> <console|player> <command...>");
+                sender.sendMessage("Usage: /sd command clear <dialogue> <node> <console|player>");
+            }
+        }
+    }
+
+    private CommandMode commandMode(String mode) {
+        return switch (mode.toLowerCase()) {
+            case "console" -> CommandMode.CONSOLE;
+            case "player" -> CommandMode.PLAYER;
+            default -> null;
+        };
+    }
+
     private void create(CommandSender sender, String[] args) {
         if (!requireAdmin(sender)) {
             return;
@@ -358,6 +420,8 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
         sender.sendMessage("/sd node add <dialogue> <node> [npc|player] [text...]");
         sender.sendMessage("/sd node end <dialogue> <node> <true|false>");
         sender.sendMessage("/sd node next <dialogue> <node> <target|clear>");
+        sender.sendMessage("/sd command add <dialogue> <node> <console|player> <command...>");
+        sender.sendMessage("/sd command clear <dialogue> <node> <console|player>");
         sender.sendMessage("/sd branch <dialogue> <node> <left|right> <target|clear> [choice text...]");
         sender.sendMessage("/sd reset [player]");
         sender.sendMessage("/sd info <dialogue>");

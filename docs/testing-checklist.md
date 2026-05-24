@@ -30,6 +30,8 @@ Use this before publishing the beta release or Hangar version.
 - `/sd node end blacksmith 1.1 true` marks the node as an ending
 - `/sd node add blacksmith Intro npc Hello, I'm the blacksmith.` creates an intro node
 - `/sd node next blacksmith Intro 1` auto-advances the intro into node `1`
+- `/sd command add blacksmith 1.1 console say <player> reached blacksmith 1.1` adds a console command
+- `/sd command add blacksmith 1.1 console playsound minecraft:entity.experience_orb.pickup player <player>` adds a sound command
 - `/sd validate` reports no errors for the bundled sample dialogues
 - `/sd validate guide` reports no errors for only the guide dialogue
 
@@ -81,6 +83,8 @@ Run these commands on a clean test dialogue:
 /sd node add commandtest Leave npc I'll be right here if you have more questions!
 /sd node end commandtest Leave true
 /sd node add commandtest Do npc You can explore survival, minigames, or creative worlds from here.
+/sd command add commandtest Do console say <player> reached commandtest Do
+/sd command add commandtest Do console playsound minecraft:entity.experience_orb.pickup player <player>
 /sd branch commandtest Do left Leave Leave
 /sd branch commandtest Do right Help Ask more questions
 /sd validate commandtest
@@ -90,6 +94,7 @@ Then wire it to a FancyNpcs NPC and confirm:
 
 - The first click sends the intro and `How can I help?` choice prompt together
 - Right-click from `Help` goes to `Do`
+- Entering `Do` prints a console message and plays the configured sound
 - Right-click from `Do` loops back to `Help`
 - Left-click from `Help` or `Do` goes to `Leave`
 - Clicking again after `Leave` starts from `Intro`

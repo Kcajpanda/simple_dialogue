@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -273,6 +274,47 @@ public final class DialogueManager {
         return true;
     }
 
+    public boolean addNodeCommand(String dialogueId, String nodeId, CommandMode mode, String command) {
+        File file = dialogueFile(dialogueId);
+        if (!file.exists()) {
+            return false;
+        }
+
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+        ConfigurationSection nodeSection = nodeSection(yaml, nodeId);
+        if (nodeSection == null) {
+            nodeSection = yaml.createSection("nodes." + nodeId);
+            nodeSection.set("speaker", "npc");
+            nodeSection.set("lines", List.of());
+        }
+
+        String key = mode == CommandMode.CONSOLE ? "commands" : "player-commands";
+        List<String> commands = new java.util.ArrayList<>(nodeSection.getStringList(key));
+        commands.add(stripLeadingSlash(command));
+        nodeSection.set(key, commands);
+        save(yaml, file);
+        reload();
+        return true;
+    }
+
+    public boolean clearNodeCommands(String dialogueId, String nodeId, CommandMode mode) {
+        File file = dialogueFile(dialogueId);
+        if (!file.exists()) {
+            return false;
+        }
+
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+        ConfigurationSection nodeSection = nodeSection(yaml, nodeId);
+        if (nodeSection == null) {
+            return false;
+        }
+
+        nodeSection.set(mode == CommandMode.CONSOLE ? "commands" : "player-commands", null);
+        save(yaml, file);
+        reload();
+        return true;
+    }
+
     public void createDialogue(String dialogueId, String npcName, String nameColor) {
         File file = dialogueFile(dialogueId);
         if (file.exists()) {
@@ -298,6 +340,7 @@ public final class DialogueManager {
             player.sendMessage(prefix(dialogue, node.speaker(), player).append(miniMessage.deserialize(line)));
         }
 
+        runCommands(player, dialogue, node);
         choicePrompt(node).ifPresent(prompt -> player.sendMessage(miniMessage.deserialize(prompt)));
     }
 
@@ -339,6 +382,28 @@ public final class DialogueManager {
         player.sendMessage(Component.text("Dialogue " + dialogue.id() + " has a next loop."));
         plugin.sessions().clear(player.getUniqueId());
         return false;
+    }
+
+    private void runCommands(Player player, Dialogue dialogue, Dialogue.DialogueNode node) {
+        for (String command : node.commands()) {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), formatCommand(command, player, dialogue, node));
+        }
+
+        for (String command : node.playerCommands()) {
+            player.performCommand(formatCommand(command, player, dialogue, node));
+        }
+    }
+
+    private String formatCommand(String command, Player player, Dialogue dialogue, Dialogue.DialogueNode node) {
+        return stripLeadingSlash(command)
+            .replace("<player>", player.getName())
+            .replace("<uuid>", player.getUniqueId().toString())
+            .replace("<dialogue>", dialogue.id())
+            .replace("<node>", node.id());
+    }
+
+    private String stripLeadingSlash(String command) {
+        return command.startsWith("/") ? command.substring(1) : command;
     }
 
     private Component prefix(Dialogue dialogue, String speaker, Player player) {
@@ -486,6 +551,8 @@ public final class DialogueManager {
                     nodeSection.getString("left-text", ""),
                     nodeSection.getString("right-text", ""),
                     nodeSection.getString("next"),
+                    nodeSection.getStringList("commands"),
+                    nodeSection.getStringList("player-commands"),
                     nodeSection.getBoolean("end", false)
                 ));
             }
@@ -507,12 +574,14 @@ public final class DialogueManager {
             || section.isString("left-text")
             || section.isString("right-text")
             || section.isString("next")
+            || section.isList("commands")
+            || section.isList("player-commands")
             || section.isBoolean("end");
     }
 
     private boolean isNodeField(String key) {
         return switch (key) {
-            case "speaker", "lines", "left", "right", "left-text", "right-text", "next", "end" -> true;
+            case "speaker", "lines", "left", "right", "left-text", "right-text", "next", "commands", "player-commands", "end" -> true;
             default -> false;
         };
     }
@@ -546,11 +615,21 @@ public final class DialogueManager {
         if (node.lines().isEmpty()) {
             issues.add(ValidationIssue.warning(prefix + "has no lines."));
         }
+        validateCommands(node.commands(), prefix + "commands", issues);
+        validateCommands(node.playerCommands(), prefix + "player-commands", issues);
         validateBranch(dialogue, node.id(), "left", node.left(), node.leftText(), issues);
         validateBranch(dialogue, node.id(), "right", node.right(), node.rightText(), issues);
         validateNext(dialogue, node, issues);
         if (node.end() && (hasBranch(node.left()) || hasBranch(node.right()) || hasBranch(node.next()))) {
             issues.add(ValidationIssue.warning(prefix + "is marked end:true but also has branch/next targets."));
+        }
+    }
+
+    private void validateCommands(List<String> commands, String label, List<ValidationIssue> issues) {
+        for (String command : commands) {
+            if (command == null || command.isBlank()) {
+                issues.add(ValidationIssue.warning(label + " contains a blank command."));
+            }
         }
     }
 
@@ -617,5 +696,10 @@ public final class DialogueManager {
     public enum Severity {
         ERROR,
         WARNING
+    }
+
+    public enum CommandMode {
+        CONSOLE,
+        PLAYER
     }
 }

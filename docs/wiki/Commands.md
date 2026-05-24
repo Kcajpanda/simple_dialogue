@@ -10,6 +10,8 @@ Admin/editing commands require `simpledialogue.admin`, which defaults to server 
 /sd node add <dialogue> <node> [npc|player] [text...]
 /sd node end <dialogue> <node> <true|false>
 /sd node next <dialogue> <node> <target|clear>
+/sd command add <dialogue> <node> <console|player> <command...>
+/sd command clear <dialogue> <node> <console|player>
 /sd branch <dialogue> <node> <left|right> <target|clear> [choice text...]
 /sd click <dialogue> <left|right> [player]
 /sd reset [player]
@@ -37,6 +39,13 @@ Add an intro that automatically enters the main node:
 ```text
 /sd node add blacksmith Intro npc Hello, I'm the blacksmith.
 /sd node next blacksmith Intro 1
+```
+
+Run a command when a node is reached:
+
+```text
+/sd command add blacksmith 1.2 console give <player> minecraft:bread 4
+/sd command add blacksmith 1.2 console playsound minecraft:entity.experience_orb.pickup player <player>
 ```
 
 Use `clear` as the branch target to remove a branch:
