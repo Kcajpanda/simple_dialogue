@@ -23,8 +23,8 @@ import org.bukkit.entity.Player;
 /**
  * Loads dialogue YAML files and advances player conversations.
  *
- * <p>This class also centralizes NPC/player text formatting so every NPC line receives
- * the configured display-name prefix automatically.</p>
+ * <p>This class also centralizes NPC/player text formatting, node command execution,
+ * validation, and YAML edits made through server commands.</p>
  */
 public final class DialogueManager {
     private final SimpleDialoguePlugin plugin;
@@ -62,6 +62,20 @@ public final class DialogueManager {
 
     public Collection<String> dialogueIds() {
         return Collections.unmodifiableSet(dialogues.keySet());
+    }
+
+    public boolean deleteDialogue(String dialogueId) {
+        File file = dialogueFile(dialogueId);
+        if (!file.exists()) {
+            return false;
+        }
+
+        if (!file.delete()) {
+            return false;
+        }
+
+        reload();
+        return true;
     }
 
     public List<ValidationIssue> validateAll() {
@@ -149,6 +163,23 @@ public final class DialogueManager {
         return true;
     }
 
+    public boolean setStartNode(String dialogueId, String nodeId) {
+        File file = dialogueFile(dialogueId);
+        if (!file.exists()) {
+            return false;
+        }
+
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+        if (nodeSection(yaml, nodeId) == null) {
+            return false;
+        }
+
+        yaml.set("start", nodeId);
+        save(yaml, file);
+        reload();
+        return true;
+    }
+
     public boolean setFancyNpc(String dialogueId, String fancyNpc) {
         Optional<Dialogue> optionalDialogue = find(dialogueId);
         if (optionalDialogue.isEmpty()) {
@@ -184,6 +215,38 @@ public final class DialogueManager {
         return true;
     }
 
+    public boolean removeLine(String dialogueId, String nodeId, String indexOrAll) {
+        File file = dialogueFile(dialogueId);
+        if (!file.exists()) {
+            return false;
+        }
+
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+        ConfigurationSection nodeSection = nodeSection(yaml, nodeId);
+        if (nodeSection == null || !nodeSection.isList("lines")) {
+            return false;
+        }
+
+        if ("all".equalsIgnoreCase(indexOrAll) || "clear".equalsIgnoreCase(indexOrAll)) {
+            nodeSection.set("lines", List.of());
+            save(yaml, file);
+            reload();
+            return true;
+        }
+
+        int index = parseOneBasedIndex(indexOrAll);
+        List<String> lines = new java.util.ArrayList<>(nodeSection.getStringList("lines"));
+        if (index < 0 || index >= lines.size()) {
+            return false;
+        }
+
+        lines.remove(index);
+        nodeSection.set("lines", lines);
+        save(yaml, file);
+        reload();
+        return true;
+    }
+
     public boolean upsertNode(String dialogueId, String nodeId, String speaker, List<String> lines) {
         File file = dialogueFile(dialogueId);
         if (!file.exists()) {
@@ -201,6 +264,25 @@ public final class DialogueManager {
         } else if (!nodeSection.isList("lines")) {
             nodeSection.set("lines", List.of());
         }
+        save(yaml, file);
+        reload();
+        return true;
+    }
+
+    public boolean removeNode(String dialogueId, String nodeId) {
+        File file = dialogueFile(dialogueId);
+        if (!file.exists()) {
+            return false;
+        }
+
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+        ConfigurationSection nodesSection = yaml.getConfigurationSection("nodes");
+        if (nodesSection == null || !nodesSection.contains(nodeId)) {
+            return false;
+        }
+
+        nodesSection.set(nodeId, null);
+        clearReferencesToNode(yaml, nodeId);
         save(yaml, file);
         reload();
         return true;
@@ -227,6 +309,7 @@ public final class DialogueManager {
             nodeSection.set(textKey, null);
         } else {
             nodeSection.set(branchKey, target);
+            nodeSection.set("end", false);
             if (choiceText != null && !choiceText.isBlank()) {
                 nodeSection.set(textKey, choiceText);
             }
@@ -268,7 +351,12 @@ public final class DialogueManager {
             nodeSection.set("speaker", "npc");
             nodeSection.set("lines", List.of());
         }
-        nodeSection.set("next", ("clear".equalsIgnoreCase(target) || "none".equalsIgnoreCase(target)) ? null : target);
+        if ("clear".equalsIgnoreCase(target) || "none".equalsIgnoreCase(target)) {
+            nodeSection.set("next", null);
+        } else {
+            nodeSection.set("next", target);
+            nodeSection.set("end", false);
+        }
         save(yaml, file);
         reload();
         return true;
@@ -310,6 +398,36 @@ public final class DialogueManager {
         }
 
         nodeSection.set(mode == CommandMode.CONSOLE ? "commands" : "player-commands", null);
+        save(yaml, file);
+        reload();
+        return true;
+    }
+
+    public boolean removeNodeCommand(String dialogueId, String nodeId, CommandMode mode, String indexOrAll) {
+        if ("all".equalsIgnoreCase(indexOrAll) || "clear".equalsIgnoreCase(indexOrAll)) {
+            return clearNodeCommands(dialogueId, nodeId, mode);
+        }
+
+        File file = dialogueFile(dialogueId);
+        if (!file.exists()) {
+            return false;
+        }
+
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+        ConfigurationSection nodeSection = nodeSection(yaml, nodeId);
+        if (nodeSection == null) {
+            return false;
+        }
+
+        String key = mode == CommandMode.CONSOLE ? "commands" : "player-commands";
+        int index = parseOneBasedIndex(indexOrAll);
+        List<String> commands = new java.util.ArrayList<>(nodeSection.getStringList(key));
+        if (index < 0 || index >= commands.size()) {
+            return false;
+        }
+
+        commands.remove(index);
+        nodeSection.set(key, commands);
         save(yaml, file);
         reload();
         return true;
@@ -404,6 +522,43 @@ public final class DialogueManager {
 
     private String stripLeadingSlash(String command) {
         return command.startsWith("/") ? command.substring(1) : command;
+    }
+
+    private void clearReferencesToNode(YamlConfiguration yaml, String nodeId) {
+        ConfigurationSection nodesSection = yaml.getConfigurationSection("nodes");
+        if (nodesSection == null) {
+            return;
+        }
+
+        for (String key : nodesSection.getKeys(true)) {
+            Object rawNode = nodesSection.get(key);
+            if (!(rawNode instanceof ConfigurationSection section)) {
+                continue;
+            }
+
+            clearReference(section, "left", nodeId);
+            clearReference(section, "right", nodeId);
+            clearReference(section, "next", nodeId);
+        }
+    }
+
+    private void clearReference(ConfigurationSection section, String key, String nodeId) {
+        if (nodeId.equals(section.getString(key))) {
+            section.set(key, null);
+            if ("left".equals(key)) {
+                section.set("left-text", null);
+            } else if ("right".equals(key)) {
+                section.set("right-text", null);
+            }
+        }
+    }
+
+    private int parseOneBasedIndex(String rawIndex) {
+        try {
+            return Integer.parseInt(rawIndex) - 1;
+        } catch (NumberFormatException exception) {
+            return -1;
+        }
     }
 
     private Component prefix(Dialogue dialogue, String speaker, Player player) {

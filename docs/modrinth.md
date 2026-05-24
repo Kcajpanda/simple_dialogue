@@ -19,20 +19,21 @@ Server owners can build trees directly with `/sd` commands or edit YAML files fo
 
 ## Version Upload
 
-- Version number: `v0.1.4`
+- Version number: `v0.1.5`
 - Version type: Beta
 - Game versions: use the Paper/Minecraft versions tested in-game
-- File: `simple-dialogue-0.1.4.jar`
+- File: `simple-dialogue-0.1.5.jar`
 - Dependency: FancyNpcs, required
 
 ## Version Changelog
 
-`v0.1.4` adds node actions on top of the command-built dialogue tree tools:
+`v0.1.5` completes the command-built dialogue tree tools:
 
 - Create or update nodes with `/sd node add`
+- Set the start node with `/sd start`
 - Auto-advance intro nodes with `/sd node next`
 - Mark endings with `/sd node end`
 - Wire left/right branches with `/sd branch`
 - Clear branches with `/sd branch <dialogue> <node> <left|right> clear`
 - Run console/player commands when a node is reached with `/sd command add`
-- Corrects plugin metadata and adds release-readiness/wiki docs
+- Remove lines, nodes, node commands, and whole test dialogues without opening YAML

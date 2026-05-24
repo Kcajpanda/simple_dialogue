@@ -17,7 +17,9 @@ Commands are good for:
 - Creating a starter file
 - Linking a dialogue id to a FancyNpcs NPC name
 - Adding quick test lines while standing in-game
+- Setting the start node
 - Creating nodes
+- Inspecting and removing bad nodes
 - Wiring left/right branch targets
 - Marking ending nodes
 - Setting one-way `next` transitions for intros or automatic line exchanges
@@ -160,6 +162,25 @@ Command placeholders:
 - `<uuid>`: the player's UUID
 - `<dialogue>`: the dialogue id
 - `<node>`: the node id
+
+## Command Editing Cleanup
+
+Use these when an in-game draft goes sideways:
+
+```text
+/sd start blacksmith Intro
+/sd node info blacksmith 1
+/sd line remove blacksmith 1 1
+/sd line remove blacksmith 1 all
+/sd branch blacksmith 1 right clear
+/sd node next blacksmith Intro clear
+/sd command remove blacksmith 1.1 console 1
+/sd command clear blacksmith 1.1 console
+/sd node remove blacksmith 1.1
+/sd delete blacksmith confirm
+```
+
+When you remove a node, Simple Dialogue clears direct `left`, `right`, and `next` references pointing at it. Run `/sd validate <dialogue>` afterward to catch anything else that needs attention.
 
 ## Choice Prompts
 

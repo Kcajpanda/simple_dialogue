@@ -94,3 +94,17 @@ nodes:
 Available placeholders are `<player>`, `<uuid>`, `<dialogue>`, and `<node>`.
 
 Run `/sd validate` after editing YAML.
+
+## Server Command Cleanup
+
+```text
+/sd start guide Intro
+/sd node info guide Help
+/sd line remove guide Help 1
+/sd branch guide Help left clear
+/sd node next guide Intro clear
+/sd command clear guide Do console
+/sd node remove guide Do
+```
+
+Run `/sd validate <dialogue>` after cleanup so missing references are caught before players test the NPC.

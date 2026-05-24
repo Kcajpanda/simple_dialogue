@@ -18,8 +18,9 @@ import org.bukkit.entity.Player;
 /**
  * Handles the /simpledialogue and /sd command surface.
  *
- * <p>The command set is deliberately small for now: enough to create a dialogue,
- * edit display names, add lines, reload YAML, and support command-based NPC actions.</p>
+ * <p>The command set is deliberately small but complete enough for in-game drafting:
+ * create dialogues, inspect/edit nodes, wire branches, add node commands, clean up mistakes,
+ * reload YAML, and support command-based NPC actions.</p>
  */
 public final class SimpleDialogueCommand implements CommandExecutor, TabCompleter {
     private final SimpleDialoguePlugin plugin;
@@ -43,6 +44,7 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
                 plugin.reloadPlugin();
                 sender.sendMessage("SimpleDialogue reloaded.");
             }
+            case "start" -> start(sender, args);
             case "click" -> click(sender, args);
             case "npcname" -> npcName(sender, args);
             case "link" -> link(sender, args);
@@ -51,6 +53,7 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
             case "command" -> nodeCommand(sender, args);
             case "branch" -> branch(sender, args);
             case "new" -> create(sender, args);
+            case "delete" -> delete(sender, args);
             case "reset" -> reset(sender, args);
             case "info" -> info(sender, args);
             case "validate" -> validate(sender, args);
@@ -63,22 +66,22 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return List.of("reload", "click", "npcname", "link", "line", "node", "command", "branch", "new", "reset", "info", "validate");
+            return List.of("reload", "start", "click", "npcname", "link", "line", "node", "command", "branch", "new", "delete", "reset", "info", "validate");
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("line")) {
-            return List.of("add");
+            return List.of("add", "remove");
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("node")) {
-            return List.of("add", "end", "next");
+            return List.of("add", "remove", "info", "end", "next");
         }
         if (
-            (args.length == 2 && List.of("click", "npcname", "link", "branch", "info", "validate").contains(args[0].toLowerCase()))
+            (args.length == 2 && List.of("start", "click", "npcname", "link", "branch", "delete", "info", "validate").contains(args[0].toLowerCase()))
                 || (args.length == 3 && List.of("line", "node").contains(args[0].toLowerCase()))
         ) {
             return new ArrayList<>(plugin.dialogueManager().dialogueIds());
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("command")) {
-            return List.of("add", "clear");
+            return List.of("add", "remove", "clear");
         }
         if (args.length == 3 && args[0].equalsIgnoreCase("command")) {
             return new ArrayList<>(plugin.dialogueManager().dialogueIds());
@@ -128,6 +131,22 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
         plugin.dialogueManager().runClick(player, args[1], side);
     }
 
+    private void start(CommandSender sender, String[] args) {
+        if (!requireAdmin(sender)) {
+            return;
+        }
+        if (args.length < 3) {
+            sender.sendMessage("Usage: /sd start <dialogue> <node>");
+            return;
+        }
+
+        if (plugin.dialogueManager().setStartNode(args[1], args[2])) {
+            sender.sendMessage("Set start node for " + args[1] + " to " + args[2] + ".");
+        } else {
+            sender.sendMessage("Unknown dialogue or node.");
+        }
+    }
+
     private void npcName(CommandSender sender, String[] args) {
         if (!requireAdmin(sender)) {
             return;
@@ -169,16 +188,32 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
         if (!requireAdmin(sender)) {
             return;
         }
-        if (args.length < 5 || !args[1].equalsIgnoreCase("add")) {
+        if (args.length < 5) {
             sender.sendMessage("Usage: /sd line add <dialogue> <node> <text...>");
+            sender.sendMessage("Usage: /sd line remove <dialogue> <node> <line-number|all>");
             return;
         }
 
-        String line = String.join(" ", List.of(args).subList(4, args.length));
-        if (plugin.dialogueManager().appendLine(args[2], args[3], line)) {
-            sender.sendMessage("Added line to " + args[2] + " node " + args[3] + ".");
-        } else {
-            sender.sendMessage("Unknown dialogue: " + args[2]);
+        switch (args[1].toLowerCase()) {
+            case "add" -> {
+                String line = String.join(" ", List.of(args).subList(4, args.length));
+                if (plugin.dialogueManager().appendLine(args[2], args[3], line)) {
+                    sender.sendMessage("Added line to " + args[2] + " node " + args[3] + ".");
+                } else {
+                    sender.sendMessage("Unknown dialogue: " + args[2]);
+                }
+            }
+            case "remove" -> {
+                if (plugin.dialogueManager().removeLine(args[2], args[3], args[4])) {
+                    sender.sendMessage("Removed line " + args[4] + " from " + args[2] + " node " + args[3] + ".");
+                } else {
+                    sender.sendMessage("Unknown dialogue/node or invalid line number.");
+                }
+            }
+            default -> {
+                sender.sendMessage("Usage: /sd line add <dialogue> <node> <text...>");
+                sender.sendMessage("Usage: /sd line remove <dialogue> <node> <line-number|all>");
+            }
         }
     }
 
@@ -188,6 +223,8 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
         }
         if (args.length < 4) {
             sender.sendMessage("Usage: /sd node add <dialogue> <node> [npc|player] [text...]");
+            sender.sendMessage("Usage: /sd node remove <dialogue> <node>");
+            sender.sendMessage("Usage: /sd node info <dialogue> <node>");
             sender.sendMessage("Usage: /sd node end <dialogue> <node> <true|false>");
             sender.sendMessage("Usage: /sd node next <dialogue> <node> <target|clear>");
             return;
@@ -195,10 +232,14 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
 
         switch (args[1].toLowerCase()) {
             case "add" -> nodeAdd(sender, args);
+            case "remove" -> nodeRemove(sender, args);
+            case "info" -> nodeInfo(sender, args);
             case "end" -> nodeEnd(sender, args);
             case "next" -> nodeNext(sender, args);
             default -> {
                 sender.sendMessage("Usage: /sd node add <dialogue> <node> [npc|player] [text...]");
+                sender.sendMessage("Usage: /sd node remove <dialogue> <node>");
+                sender.sendMessage("Usage: /sd node info <dialogue> <node>");
                 sender.sendMessage("Usage: /sd node end <dialogue> <node> <true|false>");
                 sender.sendMessage("Usage: /sd node next <dialogue> <node> <target|clear>");
             }
@@ -245,6 +286,44 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
         } else {
             sender.sendMessage("Unknown dialogue: " + args[2]);
         }
+    }
+
+    private void nodeRemove(CommandSender sender, String[] args) {
+        if (args.length < 4) {
+            sender.sendMessage("Usage: /sd node remove <dialogue> <node>");
+            return;
+        }
+
+        if (plugin.dialogueManager().removeNode(args[2], args[3])) {
+            sender.sendMessage("Removed node " + args[3] + " from " + args[2] + " and cleared references to it.");
+        } else {
+            sender.sendMessage("Unknown dialogue or node.");
+        }
+    }
+
+    private void nodeInfo(CommandSender sender, String[] args) {
+        if (args.length < 4) {
+            sender.sendMessage("Usage: /sd node info <dialogue> <node>");
+            return;
+        }
+
+        Dialogue dialogue = plugin.dialogueManager().find(args[2]).orElse(null);
+        if (dialogue == null) {
+            sender.sendMessage("Unknown dialogue: " + args[2]);
+            return;
+        }
+
+        Dialogue.DialogueNode node = dialogue.nodes().get(args[3]);
+        if (node == null) {
+            sender.sendMessage("Unknown node: " + args[3]);
+            return;
+        }
+
+        sender.sendMessage("Node: " + node.id() + " speaker=" + node.speaker() + " end=" + node.end());
+        sender.sendMessage("Branches: left=" + valueOrDash(node.left()) + " right=" + valueOrDash(node.right()) + " next=" + valueOrDash(node.next()));
+        indexedMessages(sender, "Lines", node.lines());
+        indexedMessages(sender, "Console commands", node.commands());
+        indexedMessages(sender, "Player commands", node.playerCommands());
     }
 
     private void nodeNext(CommandSender sender, String[] args) {
@@ -312,6 +391,17 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
                     sender.sendMessage("Unknown dialogue or node: " + args[2] + " " + args[3]);
                 }
             }
+            case "remove" -> {
+                if (args.length < 6) {
+                    sender.sendMessage("Usage: /sd command remove <dialogue> <node> <console|player> <command-number|all>");
+                    return;
+                }
+                if (plugin.dialogueManager().removeNodeCommand(args[2], args[3], mode, args[5])) {
+                    sender.sendMessage("Removed " + args[4].toLowerCase() + " command " + args[5] + " from " + args[2] + " node " + args[3] + ".");
+                } else {
+                    sender.sendMessage("Unknown dialogue/node or invalid command number.");
+                }
+            }
             case "clear" -> {
                 if (plugin.dialogueManager().clearNodeCommands(args[2], args[3], mode)) {
                     sender.sendMessage("Cleared " + args[4].toLowerCase() + " commands from " + args[2] + " node " + args[3] + ".");
@@ -321,6 +411,7 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
             }
             default -> {
                 sender.sendMessage("Usage: /sd command add <dialogue> <node> <console|player> <command...>");
+                sender.sendMessage("Usage: /sd command remove <dialogue> <node> <console|player> <command-number|all>");
                 sender.sendMessage("Usage: /sd command clear <dialogue> <node> <console|player>");
             }
         }
@@ -346,6 +437,22 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
         String color = args.length >= 4 ? args[3] : "green";
         plugin.dialogueManager().createDialogue(args[1], args[2], color);
         sender.sendMessage("Created dialogue " + args[1] + ".");
+    }
+
+    private void delete(CommandSender sender, String[] args) {
+        if (!requireAdmin(sender)) {
+            return;
+        }
+        if (args.length < 3 || !"confirm".equalsIgnoreCase(args[2])) {
+            sender.sendMessage("Usage: /sd delete <dialogue> confirm");
+            return;
+        }
+
+        if (plugin.dialogueManager().deleteDialogue(args[1])) {
+            sender.sendMessage("Deleted dialogue " + args[1] + ".");
+        } else {
+            sender.sendMessage("Unknown dialogue or could not delete file.");
+        }
     }
 
     private void reset(CommandSender sender, String[] args) {
@@ -414,15 +521,21 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
     private void help(CommandSender sender) {
         sender.sendMessage("/sd click <dialogue> <left|right> [player]");
         sender.sendMessage("/sd new <dialogue> <npc-name> [name-color]");
+        sender.sendMessage("/sd start <dialogue> <node>");
         sender.sendMessage("/sd npcname <dialogue> <name> <name-color> [bracket-color]");
         sender.sendMessage("/sd link <dialogue> <fancy-npc>");
         sender.sendMessage("/sd line add <dialogue> <node> <text...>");
+        sender.sendMessage("/sd line remove <dialogue> <node> <line-number|all>");
         sender.sendMessage("/sd node add <dialogue> <node> [npc|player] [text...]");
+        sender.sendMessage("/sd node remove <dialogue> <node>");
+        sender.sendMessage("/sd node info <dialogue> <node>");
         sender.sendMessage("/sd node end <dialogue> <node> <true|false>");
         sender.sendMessage("/sd node next <dialogue> <node> <target|clear>");
         sender.sendMessage("/sd command add <dialogue> <node> <console|player> <command...>");
+        sender.sendMessage("/sd command remove <dialogue> <node> <console|player> <command-number|all>");
         sender.sendMessage("/sd command clear <dialogue> <node> <console|player>");
         sender.sendMessage("/sd branch <dialogue> <node> <left|right> <target|clear> [choice text...]");
+        sender.sendMessage("/sd delete <dialogue> confirm");
         sender.sendMessage("/sd reset [player]");
         sender.sendMessage("/sd info <dialogue>");
         sender.sendMessage("/sd validate [dialogue]");
@@ -435,5 +548,21 @@ public final class SimpleDialogueCommand implements CommandExecutor, TabComplete
             return false;
         }
         return true;
+    }
+
+    private String valueOrDash(String value) {
+        return value == null || value.isBlank() ? "-" : value;
+    }
+
+    private void indexedMessages(CommandSender sender, String label, List<String> values) {
+        if (values.isEmpty()) {
+            sender.sendMessage(label + ": none");
+            return;
+        }
+
+        sender.sendMessage(label + ":");
+        for (int index = 0; index < values.size(); index++) {
+            sender.sendMessage((index + 1) + ". " + values.get(index));
+        }
     }
 }

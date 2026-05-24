@@ -25,13 +25,22 @@ Use this before publishing the beta release or Hangar version.
 - `/sd new blacksmith Blacksmith gold` creates `blacksmith.yml`
 - `/sd link blacksmith blacksmith` prints the FancyNpcs action commands
 - `/sd line add blacksmith 1 Need something forged?` appends a line
+- `/sd line remove blacksmith 1 1` removes the first line
+- `/sd line remove blacksmith 1 all` clears all lines
 - `/sd node add blacksmith 1.1 npc Bring me iron and coal.` creates a branch node
 - `/sd branch blacksmith 1 right 1.1 Ask for work` wires a branch and choice prompt
+- `/sd branch blacksmith 1 right clear` removes the branch and choice text
 - `/sd node end blacksmith 1.1 true` marks the node as an ending
 - `/sd node add blacksmith Intro npc Hello, I'm the blacksmith.` creates an intro node
 - `/sd node next blacksmith Intro 1` auto-advances the intro into node `1`
+- `/sd start blacksmith Intro` sets the dialogue start node
+- `/sd node info blacksmith Intro` lists node lines, branches, and commands
 - `/sd command add blacksmith 1.1 console say <player> reached blacksmith 1.1` adds a console command
 - `/sd command add blacksmith 1.1 console playsound minecraft:entity.experience_orb.pickup player <player>` adds a sound command
+- `/sd command remove blacksmith 1.1 console 1` removes one command
+- `/sd command clear blacksmith 1.1 console` clears all console commands from the node
+- `/sd node remove blacksmith 1.1` removes the node and direct references to it
+- `/sd delete blacksmith confirm` deletes the test dialogue
 - `/sd validate` reports no errors for the bundled sample dialogues
 - `/sd validate guide` reports no errors for only the guide dialogue
 
@@ -77,6 +86,7 @@ Run these commands on a clean test dialogue:
 /sd new commandtest Guide green
 /sd node add commandtest Intro npc Hello, I'm the guide.
 /sd node next commandtest Intro Help
+/sd start commandtest Intro
 /sd node add commandtest Help npc How can I help?
 /sd branch commandtest Help left Leave Leave
 /sd branch commandtest Help right Do Ask what you can do here
@@ -98,6 +108,23 @@ Then wire it to a FancyNpcs NPC and confirm:
 - Right-click from `Do` loops back to `Help`
 - Left-click from `Help` or `Do` goes to `Leave`
 - Clicking again after `Leave` starts from `Intro`
+
+## Cleanup Command Test
+
+Run this on the `commandtest` dialogue after the behavior test:
+
+```text
+/sd node info commandtest Do
+/sd command remove commandtest Do console 1
+/sd command clear commandtest Do console
+/sd branch commandtest Do right clear
+/sd node next commandtest Intro clear
+/sd node remove commandtest Do
+/sd validate commandtest
+/sd delete commandtest confirm
+```
+
+Confirm the remove commands print success messages and `/sd validate commandtest` reports the expected missing branch warnings/errors before deletion.
 
 ## YAML Editing
 

@@ -4,13 +4,19 @@ Admin/editing commands require `simpledialogue.admin`, which defaults to server 
 
 ```text
 /sd new <dialogue> <npc-name> [name-color]
+/sd delete <dialogue> confirm
+/sd start <dialogue> <node>
 /sd npcname <dialogue> <name> <name-color> [bracket-color]
 /sd link <dialogue> <fancy-npc>
 /sd line add <dialogue> <node> <text...>
+/sd line remove <dialogue> <node> <line-number|all>
 /sd node add <dialogue> <node> [npc|player] [text...]
+/sd node remove <dialogue> <node>
+/sd node info <dialogue> <node>
 /sd node end <dialogue> <node> <true|false>
 /sd node next <dialogue> <node> <target|clear>
 /sd command add <dialogue> <node> <console|player> <command...>
+/sd command remove <dialogue> <node> <console|player> <command-number|all>
 /sd command clear <dialogue> <node> <console|player>
 /sd branch <dialogue> <node> <left|right> <target|clear> [choice text...]
 /sd click <dialogue> <left|right> [player]
@@ -24,6 +30,7 @@ Admin/editing commands require `simpledialogue.admin`, which defaults to server 
 
 ```text
 /sd new blacksmith Blacksmith gold
+/sd start blacksmith 1
 /sd node add blacksmith 1 npc Need something forged?
 /sd branch blacksmith 1 left 1.1 Leave
 /sd branch blacksmith 1 right 1.2 Ask for work
@@ -52,4 +59,14 @@ Use `clear` as the branch target to remove a branch:
 
 ```text
 /sd branch blacksmith 1 left clear
+```
+
+Remove mistakes:
+
+```text
+/sd node info blacksmith 1.2
+/sd line remove blacksmith 1.2 1
+/sd command remove blacksmith 1.2 console 1
+/sd node remove blacksmith 1.2
+/sd delete blacksmith confirm
 ```

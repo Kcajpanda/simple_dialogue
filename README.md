@@ -44,14 +44,14 @@ On Windows:
 The compiled plugin jar is written to:
 
 ```text
-build/libs/simple-dialogue-0.1.4.jar
+build/libs/simple-dialogue-0.1.5.jar
 ```
 
 ## Installation
 
 1. Stop the server.
 2. Install FancyNpcs `2.10.0` or newer.
-3. Upload `simple-dialogue-0.1.4.jar` to `plugins/`.
+3. Upload `simple-dialogue-0.1.5.jar` to `plugins/`.
 4. Start the server.
 5. Confirm `SimpleDialogue` appears in `/plugins`.
 6. Confirm the sample file was created:
@@ -153,13 +153,19 @@ See [docs/dialogues.md](docs/dialogues.md) for authoring tips and file-format de
 
 ```text
 /sd new <dialogue> <npc-name> [name-color]
+/sd delete <dialogue> confirm
+/sd start <dialogue> <node>
 /sd npcname <dialogue> <name> <name-color> [bracket-color]
 /sd link <dialogue> <fancy-npc>
 /sd line add <dialogue> <node> <text...>
+/sd line remove <dialogue> <node> <line-number|all>
 /sd node add <dialogue> <node> [npc|player] [text...]
+/sd node remove <dialogue> <node>
+/sd node info <dialogue> <node>
 /sd node end <dialogue> <node> <true|false>
 /sd node next <dialogue> <node> <target|clear>
 /sd command add <dialogue> <node> <console|player> <command...>
+/sd command remove <dialogue> <node> <console|player> <command-number|all>
 /sd command clear <dialogue> <node> <console|player>
 /sd branch <dialogue> <node> <left|right> <target|clear> [choice text...]
 /sd click <dialogue> <left|right> [player]
@@ -203,11 +209,14 @@ Recommended workflow:
 
 1. Use `/sd new <id> <npc-name>` to create the starter file.
 2. Use `/sd link <id> <fancy-npc>` to print the FancyNpcs action commands.
-3. Add nodes with `/sd node add <id> <node> [npc|player] [text...]`.
-4. Wire choices with `/sd branch <id> <node> <left|right> <target> [choice text...]`.
-5. Mark endings with `/sd node end <id> <node> true`.
-6. Run `/sd validate`.
-7. Test the NPC in-game.
+3. Set the start node with `/sd start <id> <node>`.
+4. Add nodes with `/sd node add <id> <node> [npc|player] [text...]`.
+5. Wire choices with `/sd branch <id> <node> <left|right> <target> [choice text...]`.
+6. Mark endings with `/sd node end <id> <node> true`.
+7. Inspect mistakes with `/sd node info <id> <node>`.
+8. Remove bad lines, nodes, commands, or branches with the remove/clear commands.
+9. Run `/sd validate`.
+10. Test the NPC in-game.
 
 Example command-built tree:
 
@@ -272,8 +281,26 @@ The same command actions can be edited in-game:
 ```text
 /sd command add guide Do console give <player> minecraft:filled_map 1
 /sd command add guide Do console playsound minecraft:entity.experience_orb.pickup player <player>
+/sd command remove guide Do console 1
 /sd command clear guide Do console
 ```
+
+## Editing Mistakes
+
+Server-command editing now has cleanup commands, so you do not need to open YAML just to recover from a bad draft.
+
+```text
+/sd node info blacksmith 1.1
+/sd line remove blacksmith 1 all
+/sd branch blacksmith 1 right clear
+/sd node next blacksmith Intro clear
+/sd command remove blacksmith 1.1 console 1
+/sd command clear blacksmith 1.1 console
+/sd node remove blacksmith 1.1
+/sd delete blacksmith confirm
+```
+
+Adding a branch or `next` target automatically sets that node to `end: false`, which avoids the common mistake from command-built drafts where the starter node still ends the conversation.
 
 ## Release And Publishing Notes
 
@@ -284,7 +311,7 @@ The same command actions can be edited in-game:
 - GitHub Wiki draft pages: [docs/wiki/Home.md](docs/wiki/Home.md)
 - Updated sample guide dialogue: [docs/examples/guide.yml](docs/examples/guide.yml)
 - Example merchant dialogue: [docs/examples/merchant.yml](docs/examples/merchant.yml)
-- Draft `v0.1.4` release notes: [docs/release-v0.1.4.md](docs/release-v0.1.4.md)
+- Draft `v0.1.5` release notes: [docs/release-v0.1.5.md](docs/release-v0.1.5.md)
 
 ## Javadocs
 
