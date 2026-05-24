@@ -1,10 +1,10 @@
 # Compatibility And Releases
 
-Before publishing a stable release:
+Before publishing a release:
 
 - Run `.\gradlew.bat clean build`.
 - Test a clean install.
-- Test upgrading a server that already has dialogue files.
+- Test upgrading a server that already has dialogue files when the release changes YAML behavior.
 - Confirm FancyNpcs `simple_dialogue` actions still work.
 - Confirm console-command fallback actions still work.
 - Run `/sd validate` for bundled examples and existing server dialogues.
@@ -17,4 +17,13 @@ Before publishing a stable release:
 - Existing branch fields `left`, `right`, `left-text`, and `right-text` still behave the same.
 - Existing `simple_dialogue` FancyNpcs actions still advance the current session.
 
-Keep a compatibility table on this page once each Paper/FancyNpcs version is tested in-game.
+## Tested Versions
+
+- Simple Dialogue `1.0.0`
+- Paper `26.1.2-63`
+- Java `25.0.3`
+- FancyNpcs `2.10.0`
+
+## Stable Release Notes
+
+`1.0.0` is the first stable release. It includes YAML dialogue trees, left/right branching, `next` auto-advance nodes, node commands, validation, FancyNpcs integration, console-command fallback, and complete server-command editing.

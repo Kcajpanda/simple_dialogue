@@ -6,7 +6,7 @@ It integrates with FancyNpcs through a custom `simple_dialogue` action. Add the 
 
 Dialogue files are plain YAML, stored in `plugins/SimpleDialogue/dialogues/`, and support MiniMessage in dialogue lines. The plugin keeps each player's active conversation node in memory while they click through the tree.
 
-This is a beta release intended for testing, small servers, and feedback before the stable `v1.0.0` release.
+This is the first stable release of Simple Dialogue.
 
 ## Features
 
@@ -42,32 +42,31 @@ After installing Simple Dialogue and FancyNpcs, add both actions to your NPC:
 
 The last argument is the dialogue id from the YAML file, such as `guide` for `plugins/SimpleDialogue/dialogues/guide.yml`.
 
-## Beta Notes
+## Stable Notes
 
-- This is a final beta candidate for command-driven dialogue authoring.
 - Dialogue sessions reset on plugin reload/server restart.
 - YAML editing is still recommended for reviewing large trees.
-- The next stable release should be `v1.0.0` after the clean server test passes.
+- Node commands are run on the main server thread, including when triggered through FancyNpcs.
 
 ## Links
 
 - Source: https://github.com/Kcajpanda/simple_dialogue
 - Issues: https://github.com/Kcajpanda/simple_dialogue/issues
 - Documentation: https://github.com/Kcajpanda/simple_dialogue#readme
-- Release: https://github.com/Kcajpanda/simple_dialogue/releases/tag/v0.1.6
+- Release: https://github.com/Kcajpanda/simple_dialogue/releases/tag/v1.0.0
 - License: MIT
 
 ## Version Channel Text
 
-`v0.1.6` fixes FancyNpcs async action execution by rescheduling dialogue clicks and node commands onto the main server thread. It keeps the completed server-command editor from `v0.1.5`.
+`v1.0.0` is the first stable release. It includes YAML dialogue trees, left/right branching, `next` intro nodes, node commands, `/sd validate`, complete server-command editing, FancyNpcs `simple_dialogue` actions, console-command fallback, and thread-safe node command execution from FancyNpcs clicks.
 
 ## Manual Version Checklist
 
-- Version name: `v0.1.6`
-- Channel: `Beta` or `Release`
+- Version name: `v1.0.0`
+- Channel: `Release`
 - Platform: Paper
 - Platform versions: `26.1.2`
-- File: `simple-dialogue-0.1.6.jar`
-- External release URL: `https://github.com/Kcajpanda/simple_dialogue/releases/tag/v0.1.6`
+- File: `simple-dialogue-1.0.0.jar`
+- External release URL: `https://github.com/Kcajpanda/simple_dialogue/releases/tag/v1.0.0`
 - Dependency: FancyNpcs, required
 - Save/publish the version, then check the public `/versions` page while logged out or in a private window.

@@ -2,7 +2,7 @@
 
 Simple Dialogue is a small Paper plugin for left/right NPC dialogue trees. It was built to pair with FancyNpcs: add one custom FancyNpcs action to an NPC, then players can left-click or right-click through a YAML-backed conversation.
 
-This project is moving toward a stable release. Server owners should still run the release checklist on their exact Paper/FancyNpcs versions before upgrading a live server.
+Simple Dialogue `1.0.0` is the first stable release. It has been server-tested with Paper `26.1.2`, Java `25`, and FancyNpcs `2.10.0`.
 
 ## Features
 
@@ -44,14 +44,14 @@ On Windows:
 The compiled plugin jar is written to:
 
 ```text
-build/libs/simple-dialogue-0.1.6.jar
+build/libs/simple-dialogue-1.0.0.jar
 ```
 
 ## Installation
 
 1. Stop the server.
 2. Install FancyNpcs `2.10.0` or newer.
-3. Upload `simple-dialogue-0.1.6.jar` to `plugins/`.
+3. Upload `simple-dialogue-1.0.0.jar` to `plugins/`.
 4. Start the server.
 5. Confirm `SimpleDialogue` appears in `/plugins`.
 6. Confirm the sample file was created:
@@ -307,11 +307,10 @@ Adding a branch or `next` target automatically sets that node to `end: false`, w
 - Hangar page copy: [docs/hangar.md](docs/hangar.md)
 - Modrinth page copy: [docs/modrinth.md](docs/modrinth.md)
 - Server test checklist: [docs/testing-checklist.md](docs/testing-checklist.md)
-- Stable release readiness: [docs/release-readiness.md](docs/release-readiness.md)
 - GitHub Wiki draft pages: [docs/wiki/Home.md](docs/wiki/Home.md)
 - Updated sample guide dialogue: [docs/examples/guide.yml](docs/examples/guide.yml)
 - Example merchant dialogue: [docs/examples/merchant.yml](docs/examples/merchant.yml)
-- Draft `v0.1.6` release notes: [docs/release-v0.1.6.md](docs/release-v0.1.6.md)
+- `v1.0.0` release notes: [docs/release-v1.0.0.md](docs/release-v1.0.0.md)
 
 ## Javadocs
 

@@ -1,6 +1,6 @@
 # Server Testing Checklist
 
-Use this before publishing the beta release or Hangar version.
+Use this before publishing a release or adding a new marketplace version.
 
 ## Environment
 
