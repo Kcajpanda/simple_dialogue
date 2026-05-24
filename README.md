@@ -27,7 +27,7 @@ Spigot is not supported.
 
 ## Download
 
-For beta testing, download the jar from the latest GitHub Release and place it in your server's `plugins/` directory.
+For testing, download the jar from the latest GitHub Release and place it in your server's `plugins/` directory.
 
 You can also build from source:
 
@@ -44,14 +44,14 @@ On Windows:
 The compiled plugin jar is written to:
 
 ```text
-build/libs/simple-dialogue-0.1.2.jar
+build/libs/simple-dialogue-0.1.3.jar
 ```
 
 ## Installation
 
 1. Stop the server.
 2. Install FancyNpcs `2.10.0` or newer.
-3. Upload `simple-dialogue-0.1.2.jar` to `plugins/`.
+3. Upload `simple-dialogue-0.1.3.jar` to `plugins/`.
 4. Start the server.
 5. Confirm `SimpleDialogue` appears in `/plugins`.
 6. Confirm the sample file was created:
@@ -212,7 +212,8 @@ Example command-built tree:
 - GitHub Wiki draft pages: [docs/wiki/Home.md](docs/wiki/Home.md)
 - Updated sample guide dialogue: [docs/examples/guide.yml](docs/examples/guide.yml)
 - Example merchant dialogue: [docs/examples/merchant.yml](docs/examples/merchant.yml)
-- Draft `v0.1.2` release notes: [docs/release-v0.1.2.md](docs/release-v0.1.2.md)
+- Draft `v0.1.3` release notes: [docs/release-v0.1.3.md](docs/release-v0.1.3.md)
+- Previous `v0.1.2` release notes: [docs/release-v0.1.2.md](docs/release-v0.1.2.md)
 
 ## Javadocs
 

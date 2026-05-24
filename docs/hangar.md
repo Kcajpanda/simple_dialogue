@@ -6,7 +6,7 @@ It integrates with FancyNpcs through a custom `simple_dialogue` action. Add the 
 
 Dialogue files are plain YAML, stored in `plugins/SimpleDialogue/dialogues/`, and support MiniMessage in dialogue lines. The plugin keeps each player's active conversation node in memory while they click through the tree.
 
-This is a beta release intended for testing, small servers, and feedback.
+This is a beta release intended for testing, small servers, and feedback before the stable `v1.0.0` release.
 
 ## Features
 
@@ -20,7 +20,7 @@ This is a beta release intended for testing, small servers, and feedback.
 - RPG-style choice prompts with `left-text` and `right-text`
 - Sample dialogue included on first startup
 - Extra merchant example dialogue included for testing
-- Basic admin commands for creating and linking dialogues
+- Admin commands for creating dialogues, adding nodes, wiring branches, and marking endings
 - `/sd validate` command for checking dialogue tree mistakes
 
 ## Requirements
@@ -44,30 +44,30 @@ The last argument is the dialogue id from the YAML file, such as `guide` for `pl
 
 ## Beta Notes
 
-- This is early beta software.
+- This is a final beta candidate for command-driven dialogue authoring.
 - Dialogue sessions reset on plugin reload/server restart.
-- YAML editing is recommended for real branching trees.
-- The file format and command set may change before `v1.0.0`.
+- YAML editing is still recommended for reviewing large trees.
+- The next stable release should be `v1.0.0` after the clean server test passes.
 
 ## Links
 
 - Source: https://github.com/Kcajpanda/simple_dialogue
 - Issues: https://github.com/Kcajpanda/simple_dialogue/issues
 - Documentation: https://github.com/Kcajpanda/simple_dialogue#readme
-- Release: https://github.com/Kcajpanda/simple_dialogue/releases/tag/v0.1.2
+- Release: https://github.com/Kcajpanda/simple_dialogue/releases/tag/v0.1.3
 - License: MIT
 
 ## Version Channel Text
 
-`v0.1.2` adds `/sd validate`, an extra merchant test dialogue, and cleaner plugin metadata. Please test on a non-production server first and report issues with your Paper, Java, and FancyNpcs versions.
+`v0.1.3` adds server commands for building full dialogue trees in-game: create/update nodes, wire left/right branches with choice text, clear branches, and mark ending nodes. It also corrects plugin metadata and adds release-readiness/wiki docs.
 
 ## Manual Version Checklist
 
-- Version name: `v0.1.2`
+- Version name: `v0.1.3`
 - Channel: `Beta` or `Release`
 - Platform: Paper
 - Platform versions: `26.1.2`
-- File: `simple-dialogue-0.1.2.jar`
-- External release URL: `https://github.com/Kcajpanda/simple_dialogue/releases/tag/v0.1.2`
+- File: `simple-dialogue-0.1.3.jar`
+- External release URL: `https://github.com/Kcajpanda/simple_dialogue/releases/tag/v0.1.3`
 - Dependency: FancyNpcs, required
 - Save/publish the version, then check the public `/versions` page while logged out or in a private window.

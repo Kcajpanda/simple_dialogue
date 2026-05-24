@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "io.github.kcajpanda"
-version = "0.1.2"
+version = "0.1.3"
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(25))

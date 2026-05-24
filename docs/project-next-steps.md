@@ -22,7 +22,7 @@ For the first version, check:
 - The version has at least one compatible Paper version selected.
 - The visibility/publication button was completed after the file/link step.
 
-For the current update, use `v0.1.2`, the GitHub Release URL, Paper `26.1.2`, and the `simple-dialogue-0.1.2.jar` file.
+For the current update, use `v0.1.3`, the GitHub Release URL, Paper `26.1.2`, and the `simple-dialogue-0.1.3.jar` file.
 
 ## Other Plugin Sites
 
@@ -33,7 +33,17 @@ Recommended order:
 3. CurseForge/BukkitDev
 4. SpigotMC, later if you want another audience
 
-CurseForge is optional. It can help discovery because Bukkit plugins still exist there, but it is another listing to maintain. Modrinth is usually a cleaner second stop for modern Minecraft projects. If you publish anywhere else, keep the same version number, changelog, supported Paper version, dependency note, and GitHub source link.
+Modrinth is the best second stop after Hangar for a modern Paper plugin. CurseForge is optional; it can help discovery because Bukkit plugins still exist there, but it is another listing to maintain. If you publish anywhere else, keep the same version number, changelog, supported Paper version, dependency note, and GitHub source link.
+
+For Modrinth:
+
+- Project type: Plugin
+- Loaders/platforms: Paper
+- Game versions: match the Paper versions you tested
+- Version number: `v0.1.3`
+- Channel: Beta until the server test passes and `v1.0.0` is cut
+- Dependency: FancyNpcs, required
+- Upload the normal plugin jar, not the javadoc jar
 
 CurseForge Bukkit plugin uploads must be `.jar` files, so use the normal built plugin jar, not the javadoc jar.
 
@@ -44,10 +54,10 @@ Suggested message:
 ```text
 Hi! I made a small MIT-licensed Paper plugin that integrates with FancyNpcs through a custom action called simple_dialogue.
 
-It lets server owners wire left/right-click NPC dialogue trees from YAML files. I tested it with FancyNpcs 2.10.0 on Paper 26.1.2 and it is now in beta:
+It lets server owners wire left/right-click NPC dialogue trees from YAML files or in-game server commands. I tested it with FancyNpcs 2.10.0 on Paper 26.1.2 and it is now in beta:
 
 https://github.com/Kcajpanda/simple_dialogue
-https://github.com/Kcajpanda/simple_dialogue/releases/tag/v0.1.2
+https://github.com/Kcajpanda/simple_dialogue/releases/tag/v0.1.3
 
 No pressure, but I would appreciate feedback on whether I am using the FancyNpcs action API in the intended way. If this is useful to your users, I would also be happy to adjust the docs or naming to make the integration clearer.
 ```
