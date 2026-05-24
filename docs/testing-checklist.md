@@ -105,6 +105,7 @@ Then wire it to a FancyNpcs NPC and confirm:
 - The first click sends the intro and `How can I help?` choice prompt together
 - Right-click from `Help` goes to `Do`
 - Entering `Do` prints a console message and plays the configured sound
+- Console has no `Asynchronous Command Dispatched Async` error from SimpleDialogue
 - Right-click from `Do` loops back to `Help`
 - Left-click from `Help` or `Do` goes to `Leave`
 - Clicking again after `Leave` starts from `Intro`
@@ -139,4 +140,5 @@ Confirm the remove commands print success messages and `/sd validate commandtest
 - Run `.\gradlew.bat clean build`
 - Install only the release jar from `build/libs/`
 - Confirm the jar works without the repo present
+- Confirm clicking FancyNpcs actions that run node commands does not produce async command-dispatch errors
 - Save the server log from a clean startup

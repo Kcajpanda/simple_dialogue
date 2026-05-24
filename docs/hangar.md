@@ -54,20 +54,20 @@ The last argument is the dialogue id from the YAML file, such as `guide` for `pl
 - Source: https://github.com/Kcajpanda/simple_dialogue
 - Issues: https://github.com/Kcajpanda/simple_dialogue/issues
 - Documentation: https://github.com/Kcajpanda/simple_dialogue#readme
-- Release: https://github.com/Kcajpanda/simple_dialogue/releases/tag/v0.1.5
+- Release: https://github.com/Kcajpanda/simple_dialogue/releases/tag/v0.1.6
 - License: MIT
 
 ## Version Channel Text
 
-`v0.1.5` completes the server-command editor. It adds start-node editing plus cleanup commands for bad lines, nodes, commands, branches, and whole test dialogues.
+`v0.1.6` fixes FancyNpcs async action execution by rescheduling dialogue clicks and node commands onto the main server thread. It keeps the completed server-command editor from `v0.1.5`.
 
 ## Manual Version Checklist
 
-- Version name: `v0.1.5`
+- Version name: `v0.1.6`
 - Channel: `Beta` or `Release`
 - Platform: Paper
 - Platform versions: `26.1.2`
-- File: `simple-dialogue-0.1.5.jar`
-- External release URL: `https://github.com/Kcajpanda/simple_dialogue/releases/tag/v0.1.5`
+- File: `simple-dialogue-0.1.6.jar`
+- External release URL: `https://github.com/Kcajpanda/simple_dialogue/releases/tag/v0.1.6`
 - Dependency: FancyNpcs, required
 - Save/publish the version, then check the public `/versions` page while logged out or in a private window.

@@ -111,6 +111,11 @@ public final class DialogueManager {
     }
 
     public boolean runClick(Player player, String dialogueId, ClickSide side) {
+        if (!Bukkit.isPrimaryThread()) {
+            Bukkit.getScheduler().runTask(plugin, () -> runClick(player, dialogueId, side));
+            return true;
+        }
+
         Optional<Dialogue> optionalDialogue = find(dialogueId);
         if (optionalDialogue.isEmpty()) {
             player.sendMessage(Component.text("Unknown dialogue: " + dialogueId));

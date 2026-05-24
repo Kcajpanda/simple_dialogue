@@ -44,14 +44,14 @@ On Windows:
 The compiled plugin jar is written to:
 
 ```text
-build/libs/simple-dialogue-0.1.5.jar
+build/libs/simple-dialogue-0.1.6.jar
 ```
 
 ## Installation
 
 1. Stop the server.
 2. Install FancyNpcs `2.10.0` or newer.
-3. Upload `simple-dialogue-0.1.5.jar` to `plugins/`.
+3. Upload `simple-dialogue-0.1.6.jar` to `plugins/`.
 4. Start the server.
 5. Confirm `SimpleDialogue` appears in `/plugins`.
 6. Confirm the sample file was created:
@@ -311,7 +311,7 @@ Adding a branch or `next` target automatically sets that node to `end: false`, w
 - GitHub Wiki draft pages: [docs/wiki/Home.md](docs/wiki/Home.md)
 - Updated sample guide dialogue: [docs/examples/guide.yml](docs/examples/guide.yml)
 - Example merchant dialogue: [docs/examples/merchant.yml](docs/examples/merchant.yml)
-- Draft `v0.1.5` release notes: [docs/release-v0.1.5.md](docs/release-v0.1.5.md)
+- Draft `v0.1.6` release notes: [docs/release-v0.1.6.md](docs/release-v0.1.6.md)
 
 ## Javadocs
 
